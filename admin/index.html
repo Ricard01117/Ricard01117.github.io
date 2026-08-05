@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="robots"
+    content="noindex, nofollow"
+  >
+
+  <title>Administrador | Ricardo Castro</title>
+
+  <link rel="stylesheet" href="admin.css">
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+  >
+
+  <script type="module" src="admin.js"></script>
+</head>
+
+<body>
+
+  <main class="admin-page">
+
+    <section class="login-card">
+
+      <div class="login-header">
+        <div class="security-icon">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+
+        <p class="terminal-label">
+          &gt;_ Ricard01117 / admin
+        </p>
+
+        <h1>Acceso administrativo</h1>
+
+        <p>
+          Inicia sesión para administrar los proyectos del portafolio.
+        </p>
+      </div>
+
+      <form id="login-form" class="login-form" novalidate>
+
+        <div class="form-group">
+          <label for="email">Correo electrónico</label>
+
+          <div class="input-container">
+            <i class="fa-regular fa-envelope"></i>
+
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="correo@ejemplo.com"
+              autocomplete="email"
+              required
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+
+          <div class="input-container">
+            <i class="fa-solid fa-lock"></i>
+
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Ingresa tu contraseña"
+              autocomplete="current-password"
+              minlength="12"
+              required
+            >
+
+            <button
+              type="button"
+              id="toggle-password"
+              class="password-button"
+              aria-label="Mostrar contraseña"
+            >
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <p
+          id="login-message"
+          class="login-message"
+          role="alert"
+          aria-live="polite"
+        ></p>
+
+        <button type="submit" class="login-button">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          Iniciar sesión
+        </button>
+
+      </form>
+
+      <a href="../index.html" class="return-link">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver al portafolio
+      </a>
+
+    </section>
+
+  </main>
+
+</body>
+</html>
