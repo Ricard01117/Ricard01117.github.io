@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta name="robots" content="noindex, nofollow">
+
+  <title>Panel de proyectos | Ricardo Castro</title>
+
+  <link rel="stylesheet" href="panel.css">
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+  >
+
+  <script type="module" src="panel.js"></script>
+</head>
+
+<body>
+
+  <div id="loading-screen" class="loading-screen">
+    <i class="fa-solid fa-circle-notch fa-spin"></i>
+    <p>Verificando sesión...</p>
+  </div>
+
+  <main id="admin-panel" class="admin-panel hidden">
+
+    <header class="panel-header">
+
+      <div class="brand">
+        <span class="terminal-icon">&gt;_</span>
+
+        <div>
+          <strong>Ricard01117</strong>
+          <span>/ administrador</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+
+        <a
+          href="../index.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="secondary-button"
+        >
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          Ver portafolio
+        </a>
+
+        <button
+          type="button"
+          id="logout-button"
+          class="logout-button"
+        >
+          <i class="fa-solid fa-right-from-bracket"></i>
+          Cerrar sesión
+        </button>
+
+      </div>
+
+    </header>
+
+    <div class="panel-content">
+
+      <section class="dashboard-header">
+
+        <div>
+          <p class="section-label">Panel administrativo</p>
+
+          <h1>Proyectos del portafolio</h1>
+
+          <p>
+            Crea, edita, publica, ordena y elimina las tarjetas
+            visibles en tu portafolio.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          id="new-project-button"
+          class="primary-button"
+        >
+          <i class="fa-solid fa-plus"></i>
+          Nuevo proyecto
+        </button>
+
+      </section>
+
+      <section class="stats-grid">
+
+        <article class="stat-card">
+          <i class="fa-solid fa-folder-open"></i>
+
+          <div>
+            <span>Total</span>
+            <strong id="total-projects">0</strong>
+          </div>
+        </article>
+
+        <article class="stat-card">
+          <i class="fa-solid fa-eye"></i>
+
+          <div>
+            <span>Publicados</span>
+            <strong id="published-projects">0</strong>
+          </div>
+        </article>
+
+        <article class="stat-card">
+          <i class="fa-solid fa-eye-slash"></i>
+
+          <div>
+            <span>Ocultos</span>
+            <strong id="hidden-projects">0</strong>
+          </div>
+        </article>
+
+        <article class="stat-card">
+          <i class="fa-solid fa-star"></i>
+
+          <div>
+            <span>Destacados</span>
+            <strong id="featured-projects">0</strong>
+          </div>
+        </article>
+
+      </section>
+
+      <p
+        id="panel-message"
+        class="panel-message"
+        role="alert"
+        aria-live="polite"
+      ></p>
+
+      <section class="workspace">
+
+        <aside id="form-panel" class="form-panel">
+
+          <div class="form-header">
+
+            <div>
+              <p class="section-label">Editor</p>
+              <h2 id="form-title">Nuevo proyecto</h2>
+            </div>
+
+            <button
+              type="button"
+              id="close-form-button"
+              class="icon-button"
+              aria-label="Cerrar formulario"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+
+          </div>
+
+          <form id="project-form" novalidate>
+
+            <input
+              type="hidden"
+              id="project-id"
+              name="project-id"
+            >
+
+            <div class="form-group">
+              <label for="title">Nombre del proyecto</label>
+
+              <input
+                type="text"
+                id="title"
+                name="title"
+                maxlength="100"
+                placeholder="Ej. plataforma-academica"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="description">Descripción</label>
+
+              <textarea
+                id="description"
+                name="description"
+                maxlength="500"
+                rows="5"
+                placeholder="Describe brevemente el proyecto..."
+                required
+              ></textarea>
+
+              <small>
+                <span id="description-counter">0</span>/500
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label for="demo-url">
+                Enlace del proyecto publicado
+              </label>
+
+              <input
+                type="url"
+                id="demo-url"
+                name="demo-url"
+                placeholder="https://..."
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="github-url">
+                Enlace del repositorio de GitHub
+              </label>
+
+              <input
+                type="url"
+                id="github-url"
+                name="github-url"
+                placeholder="https://github.com/..."
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="technologies">Tecnologías</label>
+
+              <input
+                type="text"
+                id="technologies"
+                name="technologies"
+                placeholder="React, Laravel, MySQL"
+                required
+              >
+
+              <small>Sepáralas utilizando comas.</small>
+            </div>
+
+            <div class="form-row">
+
+              <div class="form-group">
+                <label for="icon">Icono</label>
+
+                <select id="icon" name="icon">
+                  <option value="fa-solid fa-code">Código</option>
+
+                  <option value="fa-solid fa-graduation-cap">
+                    Académico
+                  </option>
+
+                  <option value="fa-solid fa-box-open">
+                    Inventario
+                  </option>
+
+                  <option value="fa-solid fa-gamepad">
+                    Videojuegos
+                  </option>
+
+                  <option value="fa-solid fa-laptop-code">
+                    Aplicación web
+                  </option>
+
+                  <option value="fa-solid fa-database">
+                    Base de datos
+                  </option>
+
+                  <option value="fa-solid fa-gears">
+                    Automatización
+                  </option>
+
+                  <option value="fa-regular fa-heart">
+                    Artesanías
+                  </option>
+
+                  <option value="fa-solid fa-chart-line">
+                    Analítica
+                  </option>
+
+                  <option value="fa-solid fa-mobile-screen">
+                    Aplicación móvil
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="theme">Color</label>
+
+                <select id="theme" name="theme">
+                  <option value="cyan-project">Cyan</option>
+                  <option value="blue-project">Azul</option>
+                  <option value="purple-project">Morado</option>
+                  <option value="pink-project">Rosa</option>
+                  <option value="green-project">Verde</option>
+                </select>
+              </div>
+
+            </div>
+
+            <div class="form-row">
+
+              <div class="form-group">
+                <label for="order">Orden</label>
+
+                <input
+                  type="number"
+                  id="order"
+                  name="order"
+                  min="0"
+                  step="1"
+                  value="0"
+                  required
+                >
+              </div>
+
+              <div class="preview-icon">
+                <span>Vista del icono</span>
+
+                <div id="icon-preview">
+                  <i class="fa-solid fa-code"></i>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="switches">
+
+              <label class="switch-field">
+                <input
+                  type="checkbox"
+                  id="published"
+                  name="published"
+                  checked
+                >
+
+                <span class="switch"></span>
+
+                <span>
+                  <strong>Publicado</strong>
+                  <small>Visible en el portafolio</small>
+                </span>
+              </label>
+
+              <label class="switch-field">
+                <input
+                  type="checkbox"
+                  id="featured"
+                  name="featured"
+                  checked
+                >
+
+                <span class="switch"></span>
+
+                <span>
+                  <strong>Destacado</strong>
+                  <small>Aparece en la sección principal</small>
+                </span>
+              </label>
+
+            </div>
+
+            <div class="form-actions">
+
+              <button
+                type="button"
+                id="cancel-button"
+                class="secondary-button"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="submit"
+                id="save-button"
+                class="primary-button"
+              >
+                <i class="fa-solid fa-floppy-disk"></i>
+                Guardar proyecto
+              </button>
+
+            </div>
+
+          </form>
+
+        </aside>
+
+        <section class="projects-panel">
+
+          <div class="projects-toolbar">
+
+            <div>
+              <p class="section-label">Contenido</p>
+              <h2>Proyectos registrados</h2>
+            </div>
+
+            <div class="filters">
+
+              <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input
+                  type="search"
+                  id="project-search"
+                  placeholder="Buscar proyecto..."
+                >
+              </div>
+
+              <select
+                id="status-filter"
+                aria-label="Filtrar por estado"
+              >
+                <option value="all">Todos</option>
+                <option value="published">Publicados</option>
+                <option value="hidden">Ocultos</option>
+                <option value="featured">Destacados</option>
+              </select>
+
+              <button
+                type="button"
+                id="refresh-button"
+                class="icon-button"
+                aria-label="Actualizar proyectos"
+              >
+                <i class="fa-solid fa-rotate"></i>
+              </button>
+
+            </div>
+
+          </div>
+
+          <div
+            id="projects-list"
+            class="projects-list"
+          ></div>
+
+          <div
+            id="empty-state"
+            class="empty-state hidden"
+          >
+            <i class="fa-regular fa-folder-open"></i>
+
+            <h3>No hay proyectos</h3>
+
+            <p>
+              Crea tu primer proyecto utilizando el botón
+              “Nuevo proyecto”.
+            </p>
+          </div>
+
+        </section>
+
+      </section>
+
+    </div>
+
+  </main>
+
+</body>
+</html>

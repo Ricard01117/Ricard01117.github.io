@@ -3,29 +3,45 @@
 import { createClient } from
   "https://esm.sh/@supabase/supabase-js@2";
 
-/*
- * Estas dos variables se completarán después de crear Supabase.
- *
- * La PUBLISHABLE KEY puede utilizarse en el navegador con RLS.
- * NUNCA coloques aquí:
- * - la contraseña
- * - una secret key
- * - una service_role key
- * - credenciales de la base de datos
- */
+/* =====================================================
+   CONFIGURACIÓN DE SUPABASE
+===================================================== */
+
 const SUPABASE_URL =
-  "REEMPLAZAR_CON_URL_DE_SUPABASE";
+  "https://uevftlxlqxtrjhkqecjp.supabase.co";
 
+/*
+ * Pega aquí únicamente la Clave publicable completa.
+ * Comienza con: sb_publishable_
+ *
+ * NUNCA coloques aquí:
+ * - sb_secret_
+ * - service_role
+ * - contraseña de PostgreSQL
+ * - contraseña de tu usuario
+ */
 const SUPABASE_PUBLISHABLE_KEY =
-  "REEMPLAZAR_CON_PUBLISHABLE_KEY";
+  "sb_publishable_PLXTdDsz9AlyQV_KEYsG4A_7UGrCSpW";
 
+/*
+ * Después del inicio de sesión se abrirá este archivo.
+ * Lo construiremos en el siguiente paso.
+ */
 const PANEL_URL = "./panel.html";
+
+/* =====================================================
+   VALIDACIÓN DE CONFIGURACIÓN
+===================================================== */
 
 const configuracionLista =
   SUPABASE_URL.startsWith("https://") &&
-  !SUPABASE_URL.includes("REEMPLAZAR") &&
+  SUPABASE_URL.includes(".supabase.co") &&
   SUPABASE_PUBLISHABLE_KEY.startsWith("sb_publishable_") &&
-  !SUPABASE_PUBLISHABLE_KEY.includes("REEMPLAZAR");
+  !SUPABASE_PUBLISHABLE_KEY.includes("PEGA_AQUI");
+
+/* =====================================================
+   CLIENTE DE SUPABASE
+===================================================== */
 
 const supabase = configuracionLista
   ? createClient(
@@ -41,15 +57,24 @@ const supabase = configuracionLista
     )
   : null;
 
+/* =====================================================
+   INICIO
+===================================================== */
+
 document.addEventListener("DOMContentLoaded", iniciarLogin);
 
 async function iniciarLogin() {
   const formulario = document.getElementById("login-form");
-  const botonPassword = document.getElementById("toggle-password");
+  const botonPassword = document.getElementById(
+    "toggle-password"
+  );
   const campoPassword = document.getElementById("password");
 
   if (!formulario || !botonPassword || !campoPassword) {
-    console.error("No se encontraron los elementos del formulario.");
+    console.error(
+      "No se encontraron los elementos del formulario."
+    );
+
     return;
   }
 
@@ -61,7 +86,7 @@ async function iniciarLogin() {
 
   if (!configuracionLista) {
     mostrarMensaje(
-      "La interfaz está lista. Falta conectar Supabase para activar el acceso.",
+      "Falta colocar la Clave publicable de Supabase en admin.js.",
       "warning"
     );
 
@@ -71,28 +96,36 @@ async function iniciarLogin() {
   await comprobarSesionActiva();
 }
 
-function alternarPassword(campoPassword, botonPassword) {
-  const mostrandoPassword = campoPassword.type === "text";
+/* =====================================================
+   MOSTRAR U OCULTAR CONTRASEÑA
+===================================================== */
 
-  campoPassword.type = mostrandoPassword
+function alternarPassword(campoPassword, botonPassword) {
+  const passwordVisible = campoPassword.type === "text";
+
+  campoPassword.type = passwordVisible
     ? "password"
     : "text";
 
   const icono = botonPassword.querySelector("i");
 
   if (icono) {
-    icono.className = mostrandoPassword
+    icono.className = passwordVisible
       ? "fa-regular fa-eye"
       : "fa-regular fa-eye-slash";
   }
 
   botonPassword.setAttribute(
     "aria-label",
-    mostrandoPassword
+    passwordVisible
       ? "Mostrar contraseña"
       : "Ocultar contraseña"
   );
 }
+
+/* =====================================================
+   COMPROBAR SESIÓN EXISTENTE
+===================================================== */
 
 async function comprobarSesionActiva() {
   if (!supabase) {
@@ -106,7 +139,11 @@ async function comprobarSesionActiva() {
     } = await supabase.auth.getSession();
 
     if (error) {
-      console.error("Error al comprobar la sesión:", error);
+      console.error(
+        "Error al comprobar la sesión:",
+        error
+      );
+
       return;
     }
 
@@ -114,17 +151,28 @@ async function comprobarSesionActiva() {
       window.location.replace(PANEL_URL);
     }
   } catch (error) {
-    console.error("No fue posible comprobar la sesión:", error);
+    console.error(
+      "No fue posible comprobar la sesión:",
+      error
+    );
   }
 }
+
+/* =====================================================
+   PROCESAR INICIO DE SESIÓN
+===================================================== */
 
 async function procesarLogin(evento) {
   evento.preventDefault();
 
   const formulario = evento.currentTarget;
+
   const campoEmail = document.getElementById("email");
   const campoPassword = document.getElementById("password");
-  const botonLogin = formulario.querySelector(".login-button");
+
+  const botonLogin = formulario.querySelector(
+    ".login-button"
+  );
 
   limpiarMensaje();
 
@@ -148,7 +196,7 @@ async function procesarLogin(evento) {
 
   if (!supabase || !configuracionLista) {
     mostrarMensaje(
-      "El acceso todavía no está conectado con Supabase.",
+      "La conexión con Supabase todavía no está configurada.",
       "warning"
     );
 
@@ -172,10 +220,10 @@ async function procesarLogin(evento) {
 
     if (error || !data.session) {
       /*
-       * Usamos un mensaje genérico para no revelar:
-       * - si el correo existe
-       * - si la contraseña fue incorrecta
-       * - si la cuenta está registrada
+       * Mensaje genérico para no revelar si:
+       * - el correo existe
+       * - la contraseña es incorrecta
+       * - la cuenta está registrada
        */
       mostrarMensaje(
         "Las credenciales no son válidas.",
@@ -197,7 +245,10 @@ async function procesarLogin(evento) {
       window.location.replace(PANEL_URL);
     }, 600);
   } catch (error) {
-    console.error("Error durante el inicio de sesión:", error);
+    console.error(
+      "Error durante el inicio de sesión:",
+      error
+    );
 
     mostrarMensaje(
       "No fue posible iniciar sesión. Inténtalo nuevamente.",
@@ -207,6 +258,10 @@ async function procesarLogin(evento) {
     establecerCargando(botonLogin, false);
   }
 }
+
+/* =====================================================
+   ESTADO DEL BOTÓN
+===================================================== */
 
 function establecerCargando(boton, cargando) {
   boton.disabled = cargando;
@@ -222,8 +277,14 @@ function establecerCargando(boton, cargando) {
     `;
 }
 
+/* =====================================================
+   MENSAJES
+===================================================== */
+
 function mostrarMensaje(texto, tipo) {
-  const elemento = document.getElementById("login-message");
+  const elemento = document.getElementById(
+    "login-message"
+  );
 
   if (!elemento) {
     return;
@@ -234,7 +295,9 @@ function mostrarMensaje(texto, tipo) {
 }
 
 function limpiarMensaje() {
-  const elemento = document.getElementById("login-message");
+  const elemento = document.getElementById(
+    "login-message"
+  );
 
   if (!elemento) {
     return;

@@ -1284,3 +1284,56 @@ a {
     min-width: 520px;
   }
 }
+
+/* Laravel */
+.technology-card:nth-child(5) i {
+  color: #ff2d20;
+  text-shadow:
+    0 0 12px rgba(255, 45, 32, 0.45);
+}
+
+/* Mensaje de carga o lista vacía */
+.projects-message {
+  grid-column: 1 / -1;
+
+  display: grid;
+  place-items: center;
+  gap: 12px;
+
+  min-height: 180px;
+  padding: 30px;
+
+  color: var(--texto-secundario);
+  text-align: center;
+}
+
+.projects-message i {
+  color: var(--cyan);
+  font-size: 35px;
+
+  text-shadow:
+    0 0 12px rgba(0, 229, 255, 0.5);
+}
+
+.projects-message p {
+  font-size: 15px;
+}
+
+/* Acceso oculto */
+.hidden-admin-access {
+  display: block;
+  padding: 0;
+  border: none;
+  cursor: default;
+  appearance: none;
+}
+
+.hidden-admin-access:focus {
+  outline: none;
+}
+
+.hidden-admin-access:active::after {
+  box-shadow:
+    0 0 14px rgba(0, 229, 255, 0.9),
+    0 0 28px rgba(0, 229, 255, 0.45);
+}
