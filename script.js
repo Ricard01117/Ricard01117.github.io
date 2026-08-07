@@ -4,27 +4,20 @@ import { createClient } from
   "https://esm.sh/@supabase/supabase-js@2";
 
 /* =====================================================
-   CONFIGURACIÓN DE SUPABASE
+   SUPABASE
 ===================================================== */
 
 const SUPABASE_URL =
   "https://uevftlxlqxtrjhkqecjp.supabase.co";
 
-/*
- * Esta es una clave publicable para el navegador.
- * Nunca coloques aquí una clave sb_secret_.
- */
 const SUPABASE_PUBLISHABLE_KEY =
   "sb_publishable_PLXTdDsz9AlyQV_KEYsG4A_7UGrCSpW";
 
 /* =====================================================
-   ENLACES DIRECTOS DE PROYECTOS ACTUALES
-
-   Para cambiar posteriormente uno de estos enlaces,
-   modifícalo únicamente en esta sección.
+   ENLACES DIRECTOS
 ===================================================== */
 
-const ENLACES_DEMO = new Map([
+const ENLACES_DIRECTOS = new Map([
   [
     "plataforma-academica",
     "https://plataforma-academica-ricard01117.netlify.app/login"
@@ -42,10 +35,6 @@ const ENLACES_DEMO = new Map([
     "https://ricard01117.github.io/Buscador-de-juegos/?v=4"
   ]
 ]);
-
-/* =====================================================
-   CONFIGURACIÓN SEGURA DE TARJETAS
-===================================================== */
 
 const ICONOS_PERMITIDOS = new Set([
   "fa-solid fa-code",
@@ -68,25 +57,17 @@ const TEMAS_PERMITIDOS = new Set([
   "green-project"
 ]);
 
-const configuracionLista =
-  SUPABASE_URL.startsWith("https://") &&
-  SUPABASE_URL.includes(".supabase.co") &&
-  SUPABASE_PUBLISHABLE_KEY.startsWith("sb_publishable_") &&
-  !SUPABASE_PUBLISHABLE_KEY.includes("PEGA_AQUI");
-
-const supabase = configuracionLista
-  ? createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY,
-      {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true
-        }
-      }
-    )
-  : null;
+const supabase = createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY,
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false
+    }
+  }
+);
 
 /* =====================================================
    INICIO
@@ -96,35 +77,42 @@ document.addEventListener("DOMContentLoaded", async () => {
   actualizarHora();
   configurarAccesoAdministrativo();
 
-  setInterval(actualizarHora, 1000);
+  window.setInterval(actualizarHora, 1000);
 
   await cargarProyectos();
 });
 
 /* =====================================================
-   CARGAR PROYECTOS DESDE SUPABASE
+   ACCESO OCULTO
 ===================================================== */
 
-async function cargarProyectos() {
-  const contenedor = document.getElementById("projects-grid");
-
-  if (!contenedor) {
-    return;
-  }
-
-  mostrarEstadoProyectos(
-    "Cargando proyectos...",
-    "fa-solid fa-circle-notch fa-spin"
+function configurarAccesoAdministrativo() {
+  const boton = document.getElementById(
+    "hidden-admin-access"
   );
 
-  if (!supabase || !configuracionLista) {
-    mostrarEstadoProyectos(
-      "Falta configurar la clave publicable de Supabase.",
-      "fa-solid fa-triangle-exclamation"
+  if (!boton) {
+    console.error(
+      "No se encontró el botón hidden-admin-access."
     );
 
     return;
   }
+
+  boton.addEventListener("click", () => {
+    window.location.href = "./admin/index.html";
+  });
+}
+
+/* =====================================================
+   PROYECTOS
+===================================================== */
+
+async function cargarProyectos() {
+  mostrarEstado(
+    "Cargando proyectos...",
+    "fa-solid fa-circle-notch fa-spin"
+  );
 
   try {
     const { data, error } = await supabase
@@ -138,39 +126,44 @@ async function cargarProyectos() {
         tecnologias,
         icono,
         tema,
-        orden
+        publicado,
+        destacado,
+        orden,
+        created_at
       `)
       .eq("publicado", true)
       .eq("destacado", true)
-      .order("orden", { ascending: true })
-      .order("created_at", { ascending: false });
+      .order("orden", {
+        ascending: true
+      })
+      .order("created_at", {
+        ascending: false
+      });
 
     if (error) {
       throw error;
     }
 
-    const proyectos = Array.isArray(data) ? data : [];
-
-    renderizarProyectos(proyectos);
+    renderizarProyectos(
+      Array.isArray(data) ? data : []
+    );
   } catch (error) {
     console.error(
-      "No fue posible cargar los proyectos:",
+      "Error al cargar proyectos:",
       error
     );
 
-    mostrarEstadoProyectos(
+    mostrarEstado(
       "No fue posible cargar los proyectos.",
       "fa-solid fa-triangle-exclamation"
     );
   }
 }
 
-/* =====================================================
-   RENDERIZAR TARJETAS
-===================================================== */
-
 function renderizarProyectos(proyectos) {
-  const contenedor = document.getElementById("projects-grid");
+  const contenedor = document.getElementById(
+    "projects-grid"
+  );
 
   if (!contenedor) {
     return;
@@ -179,7 +172,7 @@ function renderizarProyectos(proyectos) {
   contenedor.replaceChildren();
 
   if (proyectos.length === 0) {
-    mostrarEstadoProyectos(
+    mostrarEstado(
       "Todavía no hay proyectos publicados.",
       "fa-regular fa-folder-open"
     );
@@ -187,7 +180,8 @@ function renderizarProyectos(proyectos) {
     return;
   }
 
-  const fragmento = document.createDocumentFragment();
+  const fragmento =
+    document.createDocumentFragment();
 
   proyectos.forEach((proyecto) => {
     fragmento.appendChild(
@@ -201,48 +195,58 @@ function renderizarProyectos(proyectos) {
 }
 
 function crearTarjetaProyecto(proyecto) {
-  const enlace = document.createElement("a");
+  const tarjeta = document.createElement("a");
 
-  /*
-   * Los cuatro proyectos actuales utilizan los enlaces definidos
-   * en ENLACES_DEMO. Los proyectos nuevos utilizan url_demo
-   * almacenado en Supabase.
-   */
-  enlace.href = obtenerEnlaceProyecto(proyecto);
+  tarjeta.href =
+    obtenerEnlaceProyecto(proyecto);
 
-  enlace.target = "_blank";
-  enlace.rel = "noopener noreferrer";
+  tarjeta.target = "_blank";
+  tarjeta.rel = "noopener noreferrer";
 
-  enlace.className =
+  tarjeta.className =
     `project-card ${obtenerTemaSeguro(proyecto.tema)}`;
 
-  const contenedorIcono = document.createElement("div");
+  const contenedorIcono =
+    document.createElement("div");
+
   contenedorIcono.className = "project-icon";
 
   const icono = document.createElement("i");
-  icono.className = obtenerIconoSeguro(proyecto.icono);
+
+  icono.className =
+    obtenerIconoSeguro(proyecto.icono);
 
   contenedorIcono.appendChild(icono);
 
-  const contenido = document.createElement("div");
+  const contenido =
+    document.createElement("div");
+
   contenido.className = "project-content";
 
   const titulo = document.createElement("h4");
   titulo.textContent = proyecto.titulo;
 
-  const descripcion = document.createElement("p");
-  descripcion.textContent = proyecto.descripcion;
+  const descripcion =
+    document.createElement("p");
 
-  const etiquetas = document.createElement("div");
+  descripcion.textContent =
+    proyecto.descripcion;
+
+  const etiquetas =
+    document.createElement("div");
+
   etiquetas.className = "project-tags";
 
-  normalizarTecnologias(proyecto.tecnologias)
-    .forEach((tecnologia) => {
-      const etiqueta = document.createElement("span");
+  normalizarTecnologias(
+    proyecto.tecnologias
+  ).forEach((tecnologia) => {
+    const etiqueta =
+      document.createElement("span");
 
-      etiqueta.textContent = tecnologia;
-      etiquetas.appendChild(etiqueta);
-    });
+    etiqueta.textContent = tecnologia;
+
+    etiquetas.appendChild(etiqueta);
+  });
 
   contenido.append(
     titulo,
@@ -255,47 +259,34 @@ function crearTarjetaProyecto(proyecto) {
   flecha.className =
     "fa-solid fa-arrow-up-right-from-square project-arrow";
 
-  enlace.append(
+  tarjeta.append(
     contenedorIcono,
     contenido,
     flecha
   );
 
-  return enlace;
+  return tarjeta;
 }
-
-/* =====================================================
-   OBTENER ENLACE CORRECTO DEL PROYECTO
-===================================================== */
 
 function obtenerEnlaceProyecto(proyecto) {
-  const tituloNormalizado = normalizarTitulo(
-    proyecto.titulo
-  );
-
-  const enlaceDefinido =
-    ENLACES_DEMO.get(tituloNormalizado);
-
-  /*
-   * Si el proyecto está dentro del mapa, utiliza el enlace
-   * directo configurado arriba.
-   *
-   * Para proyectos nuevos, utiliza url_demo de Supabase.
-   */
-  const enlaceFinal =
-    enlaceDefinido || proyecto.url_demo;
-
-  return validarUrl(enlaceFinal);
-}
-
-function normalizarTitulo(titulo) {
-  return String(titulo ?? "")
+  const titulo = String(
+    proyecto.titulo ?? ""
+  )
     .trim()
     .toLowerCase();
+
+  const enlaceDirecto =
+    ENLACES_DIRECTOS.get(titulo);
+
+  return validarUrl(
+    enlaceDirecto || proyecto.url_demo
+  );
 }
 
-function mostrarEstadoProyectos(texto, claseIcono) {
-  const contenedor = document.getElementById("projects-grid");
+function mostrarEstado(texto, iconoClase) {
+  const contenedor = document.getElementById(
+    "projects-grid"
+  );
 
   if (!contenedor) {
     return;
@@ -307,7 +298,7 @@ function mostrarEstadoProyectos(texto, claseIcono) {
   mensaje.className = "projects-message";
 
   const icono = document.createElement("i");
-  icono.className = claseIcono;
+  icono.className = iconoClase;
 
   const parrafo = document.createElement("p");
   parrafo.textContent = texto;
@@ -317,18 +308,20 @@ function mostrarEstadoProyectos(texto, claseIcono) {
 }
 
 /* =====================================================
-   HORA DE MÉXICO
+   RELOJ
 ===================================================== */
 
 function actualizarHora() {
-  const elementoHora = document.getElementById("current-time");
+  const elemento = document.getElementById(
+    "current-time"
+  );
 
-  if (!elementoHora) {
+  if (!elemento) {
     return;
   }
 
   try {
-    elementoHora.textContent =
+    elemento.textContent =
       new Intl.DateTimeFormat("es-MX", {
         timeZone: "America/Mexico_City",
         hour: "2-digit",
@@ -338,11 +331,11 @@ function actualizarHora() {
       }).format(new Date());
   } catch (error) {
     console.error(
-      "No fue posible actualizar la hora:",
+      "Error al actualizar la hora:",
       error
     );
 
-    elementoHora.textContent =
+    elemento.textContent =
       new Date().toLocaleTimeString("es-MX", {
         hour12: false
       });
@@ -350,72 +343,71 @@ function actualizarHora() {
 }
 
 /* =====================================================
-   ACCESO OCULTO AL ADMINISTRADOR
-===================================================== */
-
-function configurarAccesoAdministrativo() {
-  const accesoAdmin = document.getElementById(
-    "hidden-admin-access"
-  );
-
-  if (!accesoAdmin) {
-    return;
-  }
-
-  accesoAdmin.addEventListener("click", () => {
-    window.location.href = "./admin/";
-  });
-}
-
-/* =====================================================
-   EFECTOS DE TARJETAS
+   EFECTOS
 ===================================================== */
 
 function configurarEfectosTarjetas() {
-  const tarjetas = document.querySelectorAll(
-    ".technology-card, .project-card"
-  );
+  const tarjetas =
+    document.querySelectorAll(
+      ".technology-card, .project-card"
+    );
 
   tarjetas.forEach((tarjeta) => {
-    if (tarjeta.dataset.efectoConfigurado === "true") {
+    if (
+      tarjeta.dataset.efectoConfigurado ===
+      "true"
+    ) {
       return;
     }
 
-    tarjeta.dataset.efectoConfigurado = "true";
+    tarjeta.dataset.efectoConfigurado =
+      "true";
 
-    tarjeta.addEventListener("mousemove", (evento) => {
-      if (window.innerWidth <= 960) {
-        return;
+    tarjeta.addEventListener(
+      "mousemove",
+      (evento) => {
+        if (window.innerWidth <= 960) {
+          return;
+        }
+
+        const limites =
+          tarjeta.getBoundingClientRect();
+
+        const posicionX =
+          evento.clientX - limites.left;
+
+        const posicionY =
+          evento.clientY - limites.top;
+
+        const centroX =
+          limites.width / 2;
+
+        const centroY =
+          limites.height / 2;
+
+        const rotacionX =
+          ((posicionY - centroY) / centroY) *
+          -1.5;
+
+        const rotacionY =
+          ((posicionX - centroX) / centroX) *
+          1.5;
+
+        tarjeta.style.transform = `
+          perspective(700px)
+          translateY(-5px)
+          rotateX(${rotacionX}deg)
+          rotateY(${rotacionY}deg)
+        `;
       }
+    );
 
-      const limites = tarjeta.getBoundingClientRect();
-
-      const posicionX =
-        evento.clientX - limites.left;
-
-      const posicionY =
-        evento.clientY - limites.top;
-
-      const centroX = limites.width / 2;
-      const centroY = limites.height / 2;
-
-      const rotacionX =
-        ((posicionY - centroY) / centroY) * -1.5;
-
-      const rotacionY =
-        ((posicionX - centroX) / centroX) * 1.5;
-
-      tarjeta.style.transform = `
-        perspective(700px)
-        translateY(-5px)
-        rotateX(${rotacionX}deg)
-        rotateY(${rotacionY}deg)
-      `;
-    });
-
-    tarjeta.addEventListener("mouseleave", () => {
-      tarjeta.style.transform = "";
-    });
+    tarjeta.addEventListener(
+      "mouseleave",
+      () => {
+        tarjeta.style.transform = "";
+      }
+    );
   });
 }
 
@@ -441,7 +433,9 @@ function normalizarTecnologias(tecnologias) {
   }
 
   return tecnologias
-    .map((tecnologia) => String(tecnologia).trim())
+    .map((tecnologia) =>
+      String(tecnologia).trim()
+    )
     .filter(Boolean);
 }
 
@@ -449,7 +443,11 @@ function validarUrl(valor) {
   try {
     const url = new URL(valor);
 
-    if (!["http:", "https:"].includes(url.protocol)) {
+    if (
+      !["http:", "https:"].includes(
+        url.protocol
+      )
+    ) {
       return "#";
     }
 

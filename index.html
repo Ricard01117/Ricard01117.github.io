@@ -2,11 +2,15 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <meta
     name="description"
-    content="Portafolio profesional de Ricardo Castro, desarrollador enfocado en React, JavaScript, Python, SQL y automatización."
+    content="Portafolio profesional de Ricardo Castro."
   >
 
   <title>Ricardo Castro | Portafolio</title>
@@ -18,34 +22,41 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
   >
 
-  <script src="script.js" defer></script>
+  <script type="module" src="script.js"></script>
 </head>
 
 <body>
 
   <main class="portfolio">
 
-    <!-- Barra superior -->
     <header class="topbar">
+
       <div class="terminal-title">
         <span class="terminal-icon">&gt;_</span>
+
         <strong>Ricard01117</strong>
+
         <span>/ README.md</span>
       </div>
+
     </header>
 
     <section class="dashboard">
 
-      <!-- Columna izquierda -->
+      <!-- Perfil -->
       <aside class="profile-panel">
 
         <div class="profile-image-container">
+
           <div class="orbit orbit-one"></div>
           <div class="orbit orbit-two"></div>
 
-          <div class="profile-placeholder">
-            <span>FOTO</span>
-          </div>
+          <img
+            src="assets/perfil.jpg"
+            alt="Fotografía de perfil de Ricardo Castro"
+            class="profile-photo"
+          >
+
         </div>
 
         <h1>Ricardo Castro</h1>
@@ -55,20 +66,22 @@
           Ricard01117
         </p>
 
+        <!-- Línea con acceso oculto -->
         <button
-        type="button"
-        id="hidden-admin-access"
-        class="profile-line hidden-admin-access"
-        aria-label="Acceso administrativo"
+          type="button"
+          id="hidden-admin-access"
+          class="hidden-admin-access"
+          aria-label="Acceso administrativo"
         ></button>
 
         <p class="profile-description">
-          Desarrollador enfocado en React, JavaScript, Python, SQL,
-          automatización y soluciones empresariales con
+          Desarrollador enfocado en React, JavaScript, Python,
+          SQL, automatización y soluciones empresariales con
           <strong>Odoo</strong>.
         </p>
 
         <div class="social-buttons">
+
           <a
             href="https://github.com/Ricard01117"
             target="_blank"
@@ -80,15 +93,17 @@
           </a>
 
           <a
-            href="https://www.linkedin.com/in/ricardo-castro-castro-85a092354/"
+            href="#"
             class="social-button linkedin-button"
           >
             <i class="fa-brands fa-linkedin"></i>
             LinkedIn
           </a>
+
         </div>
 
         <div class="contact-info">
+
           <p>
             <i class="fa-solid fa-location-dot"></i>
             México
@@ -96,7 +111,11 @@
 
           <p>
             <i class="fa-regular fa-clock"></i>
-            <span id="current-time">--:--</span>
+
+            <span id="current-time">
+              --:--:--
+            </span>
+
             <span>(UTC -06:00)</span>
           </p>
 
@@ -104,18 +123,22 @@
             <i class="fa-regular fa-envelope"></i>
             rcastrocastro0603@gmail.com
           </p>
+
         </div>
+
       </aside>
 
-      <!-- Contenido derecho -->
+      <!-- Contenido principal -->
       <div class="main-content">
 
-        <!-- Presentación -->
         <section class="hero">
 
           <div class="hero-text">
+
             <h2>
-              Construyendo soluciones reales<br>
+              Construyendo soluciones reales
+              <br>
+
               con código que
               <span>transforma.</span>
             </h2>
@@ -123,9 +146,10 @@
             <div class="hero-line"></div>
 
             <pre><code>const developer = {
-  focus: ['React', 'JavaScript', 'Python', 'SQL', 'Odoo'],
+  focus: ['React', 'JavaScript', 'Python', 'SQL', 'Laravel'],
   goal: 'Resolver problemas, crear valor y optimizar procesos.'
 };</code></pre>
+
           </div>
 
           <div class="code-decoration">
@@ -144,32 +168,33 @@
 
           <div class="technology-grid">
 
-            <article class="technology-card">
+            <article class="technology-card react-card">
               <i class="fa-brands fa-react"></i>
               <span>React</span>
             </article>
 
-            <article class="technology-card">
+            <article class="technology-card javascript-card">
               <i class="fa-brands fa-js"></i>
               <span>JavaScript</span>
             </article>
 
-            <article class="technology-card">
+            <article class="technology-card python-card">
               <i class="fa-brands fa-python"></i>
               <span>Python</span>
             </article>
 
-            <article class="technology-card">
+            <article class="technology-card sql-card">
               <i class="fa-solid fa-database"></i>
               <span>SQL</span>
             </article>
 
-            <article class="technology-card odoo-card">
-              <span class="odoo-logo">odoo</span>
-              <span>Odoo</span>
+            <article class="technology-card laravel-card">
+              <i class="fa-brands fa-laravel"></i>
+              <span>Laravel</span>
             </article>
 
           </div>
+
         </section>
 
         <!-- Proyectos -->
@@ -180,198 +205,16 @@
             Proyectos destacados
           </h3>
 
-          <div class="projects-grid">
+          <div
+            id="projects-grid"
+            class="projects-grid"
+            aria-live="polite"
+          ></div>
 
-            <a
-              href="https://github.com/Ricard01117/plataforma-academica"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="project-card cyan-project"
-            >
-              <div class="project-icon">
-                <i class="fa-solid fa-graduation-cap"></i>
-              </div>
-
-              <div class="project-content">
-                <h4>plataforma-academica</h4>
-
-                <p>
-                  Plataforma académica full stack con React, Laravel y MySQL
-                  para gestionar, publicar y consultar documentos académicos.
-                </p>
-
-                <div class="project-tags">
-                  <span>React</span>
-                  <span>Laravel</span>
-                  <span>MySQL</span>
-                </div>
-              </div>
-
-              <i class="fa-solid fa-arrow-up-right-from-square project-arrow"></i>
-            </a>
-
-            <a
-              href="https://github.com/Ricard01117/sistema-inventario-frontend"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="project-card cyan-project"
-            >
-              <div class="project-icon">
-                <i class="fa-solid fa-box-open"></i>
-              </div>
-
-              <div class="project-content">
-                <h4>sistema-inventario-frontend</h4>
-
-                <p>
-                  Interfaz de sistema de inventario desarrollada con React
-                  y Vite.
-                </p>
-
-                <div class="project-tags">
-                  <span>React</span>
-                  <span>Vite</span>
-                  <span>JavaScript</span>
-                </div>
-              </div>
-
-              <i class="fa-solid fa-arrow-up-right-from-square project-arrow"></i>
-            </a>
-
-            <a
-              href="https://github.com/Ricard01117/artesanias-de-mi-mama"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="project-card pink-project"
-            >
-              <div class="project-icon">
-                <i class="fa-regular fa-heart"></i>
-              </div>
-
-              <div class="project-content">
-                <h4>artesanias-de-mi-mama</h4>
-
-                <p>
-                  Sitio web para presentar y compartir manualidades, imágenes,
-                  videos y trabajos artesanales.
-                </p>
-
-                <div class="project-tags">
-                  <span>HTML</span>
-                  <span>CSS</span>
-                  <span>JavaScript</span>
-                </div>
-              </div>
-
-              <i class="fa-solid fa-arrow-up-right-from-square project-arrow"></i>
-            </a>
-
-            <a
-              href="https://github.com/Ricard01117/Buscador-de-juegos"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="project-card purple-project"
-            >
-              <div class="project-icon">
-                <i class="fa-solid fa-gamepad"></i>
-              </div>
-
-              <div class="project-content">
-                <h4>Buscador-de-juegos</h4>
-
-                <p>
-                  Buscador de videojuegos gratuitos desarrollado con React,
-                  Vite y una API externa.
-                </p>
-
-                <div class="project-tags">
-                  <span>React</span>
-                  <span>Vite</span>
-                  <span>API</span>
-                </div>
-              </div>
-
-              <i class="fa-solid fa-arrow-up-right-from-square project-arrow"></i>
-            </a>
-
-          </div>
         </section>
 
       </div>
-    </section>
 
-    <!-- Parte inferior -->
-    <section class="bottom-section">
-
-      <p class="learning-message">
-        <span>&gt;</span>
-        Siempre aprendiendo. Siempre construyendo.
-      </p>
-
-      <div class="bottom-grid">
-
-        <div class="stats-panel">
-
-          <article class="stat-card">
-            <i class="fa-solid fa-code"></i>
-
-            <div>
-              <strong>46</strong>
-              <span>Contribuciones en el último año</span>
-            </div>
-          </article>
-
-          <article class="stat-card">
-            <i class="fa-regular fa-calendar"></i>
-
-            <div>
-              <strong>Consistencia</strong>
-              <span>Comprometido cada día</span>
-            </div>
-          </article>
-
-          <article class="stat-card">
-            <i class="fa-solid fa-bolt"></i>
-
-            <div>
-              <strong>Código</strong>
-              <span>Pasión que se construye</span>
-            </div>
-          </article>
-
-          <article class="stat-card">
-            <i class="fa-regular fa-star"></i>
-
-            <div>
-              <strong>Aprendizaje</strong>
-              <span>Sin límites</span>
-            </div>
-          </article>
-
-        </div>
-
-        <div class="contributions-panel">
-
-          <div class="months">
-            <span>Ene</span>
-            <span>Feb</span>
-            <span>Mar</span>
-            <span>Abr</span>
-            <span>May</span>
-            <span>Jun</span>
-            <span>Jul</span>
-            <span>Ago</span>
-            <span>Sep</span>
-            <span>Oct</span>
-            <span>Nov</span>
-            <span>Dic</span>
-          </div>
-
-          <div id="contribution-grid" class="contribution-grid"></div>
-
-        </div>
-
-      </div>
     </section>
 
   </main>
