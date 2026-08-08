@@ -144,6 +144,7 @@ function guardarReferencias() {
 
     demoUrl: document.getElementById("demo-url"),
     githubUrl: document.getElementById("github-url"),
+
     technologyInput: document.getElementById(
       "technology-input"
     ),
@@ -280,7 +281,6 @@ function configurarEventos() {
   );
 }
 
-
 /* =====================================================
    TECNOLOGÍAS DEL FORMULARIO
 ===================================================== */
@@ -370,7 +370,6 @@ function establecerTecnologiasFormulario(tecnologias) {
 
   renderizarTecnologiasFormulario();
 }
-
 
 /* =====================================================
    SESIÓN
@@ -687,6 +686,9 @@ function abrirNuevoProyecto() {
 
   elementos.form.reset();
 
+  tecnologiasFormulario = [];
+  renderizarTecnologiasFormulario();
+
   elementos.projectId.value = "";
   elementos.formTitle.textContent = "Nuevo proyecto";
   elementos.published.checked = true;
@@ -711,8 +713,9 @@ function abrirEdicionProyecto(proyecto) {
   elementos.demoUrl.value = proyecto.url_demo;
   elementos.githubUrl.value = proyecto.url_github || "";
 
-  elementos.technologies.value =
-    normalizarTecnologias(proyecto.tecnologias).join(", ");
+  establecerTecnologiasFormulario(
+    proyecto.tecnologias
+  );
 
   elementos.icon.value = obtenerIconoSeguro(
     proyecto.icono
@@ -747,6 +750,10 @@ function cerrarFormulario() {
   proyectoEnEdicion = null;
 
   elementos.form.reset();
+
+  tecnologiasFormulario = [];
+  renderizarTecnologiasFormulario();
+
   elementos.projectId.value = "";
 
   elementos.formPanel.classList.add("closed");
@@ -833,11 +840,9 @@ function obtenerDatosFormulario() {
     false
   );
 
-  const tecnologias = elementos.technologies.value
-    .split(",")
-    .map((tecnologia) => tecnologia.trim())
-    .filter(Boolean)
-    .slice(0, 12);
+  const tecnologias = [
+    ...tecnologiasFormulario
+  ];
 
   if (tecnologias.length === 0) {
     throw new Error(

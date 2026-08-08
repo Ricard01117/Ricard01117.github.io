@@ -1042,3 +1042,76 @@ a {
     width: 100%;
   }
 }
+
+/* =========================
+   EDITOR DE TECNOLOGÍAS
+========================= */
+
+.technology-input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.technology-add-button {
+  min-height: 47px;
+  padding-inline: 16px;
+}
+
+.technology-tags-editor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  min-height: 32px;
+}
+
+.technology-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 7px 9px 7px 12px;
+
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  border-radius: 999px;
+
+  color: var(--cyan-light);
+  background: rgba(0, 229, 255, 0.08);
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.technology-chip-remove {
+  display: grid;
+  place-items: center;
+
+  width: 21px;
+  height: 21px;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 50%;
+
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.06);
+
+  cursor: pointer;
+}
+
+.technology-chip-remove:hover {
+  color: #ffffff;
+  background: rgba(255, 85, 119, 0.35);
+}
+
+@media (max-width: 600px) {
+  .technology-input-row {
+    grid-template-columns: 1fr;
+  }
+
+  .technology-add-button {
+    width: 100%;
+  }
+}
