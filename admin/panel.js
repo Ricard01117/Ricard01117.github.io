@@ -62,7 +62,7 @@ const supabase = configuracionLista
 
 let proyectos = [];
 let proyectoEnEdicion = null;
-
+let tecnologiasFormulario = [];
 let elementos = {};
 
 /* =====================================================
@@ -144,7 +144,18 @@ function guardarReferencias() {
 
     demoUrl: document.getElementById("demo-url"),
     githubUrl: document.getElementById("github-url"),
-    technologies: document.getElementById("technologies"),
+    technologyInput: document.getElementById(
+      "technology-input"
+    ),
+
+    addTechnologyButton: document.getElementById(
+      "add-technology-button"
+    ),
+
+    technologyTags: document.getElementById(
+      "technology-tags"
+    ),
+
     icon: document.getElementById("icon"),
     theme: document.getElementById("theme"),
     order: document.getElementById("order"),
@@ -156,22 +167,36 @@ function guardarReferencias() {
     panelMessage: document.getElementById("panel-message"),
 
     totalProjects: document.getElementById("total-projects"),
+
     publishedProjects: document.getElementById(
       "published-projects"
     ),
+
     hiddenProjects: document.getElementById(
       "hidden-projects"
     ),
+
     featuredProjects: document.getElementById(
       "featured-projects"
     ),
 
     search: document.getElementById("project-search"),
-    statusFilter: document.getElementById("status-filter"),
-    refreshButton: document.getElementById("refresh-button"),
 
-    projectsList: document.getElementById("projects-list"),
-    emptyState: document.getElementById("empty-state")
+    statusFilter: document.getElementById(
+      "status-filter"
+    ),
+
+    refreshButton: document.getElementById(
+      "refresh-button"
+    ),
+
+    projectsList: document.getElementById(
+      "projects-list"
+    ),
+
+    emptyState: document.getElementById(
+      "empty-state"
+    )
   };
 }
 
@@ -238,7 +263,114 @@ function configurarEventos() {
     "click",
     cargarProyectos
   );
+
+  elementos.addTechnologyButton.addEventListener(
+    "click",
+    agregarTecnologiaFormulario
+  );
+
+  elementos.technologyInput.addEventListener(
+    "keydown",
+    (evento) => {
+      if (evento.key === "Enter") {
+        evento.preventDefault();
+        agregarTecnologiaFormulario();
+      }
+    }
+  );
 }
+
+
+/* =====================================================
+   TECNOLOGÍAS DEL FORMULARIO
+===================================================== */
+
+function agregarTecnologiaFormulario() {
+  const tecnologia =
+    elementos.technologyInput.value.trim();
+
+  if (!tecnologia) {
+    return;
+  }
+
+  if (tecnologiasFormulario.length >= 12) {
+    mostrarMensaje(
+      "Puedes agregar como máximo 12 tecnologías.",
+      "warning"
+    );
+    return;
+  }
+
+  const yaExiste = tecnologiasFormulario.some(
+    (item) =>
+      item.toLowerCase() === tecnologia.toLowerCase()
+  );
+
+  if (yaExiste) {
+    elementos.technologyInput.value = "";
+    elementos.technologyInput.focus();
+    return;
+  }
+
+  tecnologiasFormulario.push(tecnologia);
+
+  elementos.technologyInput.value = "";
+
+  renderizarTecnologiasFormulario();
+  elementos.technologyInput.focus();
+}
+
+function eliminarTecnologiaFormulario(indice) {
+  tecnologiasFormulario.splice(indice, 1);
+  renderizarTecnologiasFormulario();
+}
+
+function renderizarTecnologiasFormulario() {
+  elementos.technologyTags.replaceChildren();
+
+  tecnologiasFormulario.forEach(
+    (tecnologia, indice) => {
+      const etiqueta =
+        document.createElement("span");
+
+      etiqueta.className = "technology-chip";
+
+      const texto =
+        document.createElement("span");
+
+      texto.textContent = tecnologia;
+
+      const eliminar =
+        document.createElement("button");
+
+      eliminar.type = "button";
+      eliminar.className =
+        "technology-chip-remove";
+
+      eliminar.innerHTML =
+        '<i class="fa-solid fa-xmark"></i>';
+
+      eliminar.addEventListener(
+        "click",
+        () => eliminarTecnologiaFormulario(indice)
+      );
+
+      etiqueta.append(texto, eliminar);
+
+      elementos.technologyTags.appendChild(
+        etiqueta
+      );
+    }
+  );
+}
+
+function establecerTecnologiasFormulario(tecnologias) {
+  tecnologiasFormulario =
+    normalizarTecnologias(tecnologias).slice(0, 12);
+
+  renderizarTecnologiasFormulario();
+}
+
 
 /* =====================================================
    SESIÓN

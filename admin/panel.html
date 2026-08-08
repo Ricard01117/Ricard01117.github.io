@@ -228,15 +228,37 @@
             </div>
 
             <div class="form-group">
-              <label for="technologies">Tecnologías</label>
+              
+              <label for="technology-input">Tecnologías</label>
 
-              <input
-                type="text"
-                id="technologies"
-                name="technologies"
-                placeholder="React, Laravel, MySQL"
-                required
-              >
+              <div class="technology-input-row">
+                <input
+                  type="text"
+                  id="technology-input"
+                  placeholder="Ej. React"
+                  maxlength="30"
+                  autocomplete="off"
+                >
+
+                <button
+                  type="button"
+                  id="add-technology-button"
+                  class="secondary-button technology-add-button"
+                >
+                  <i class="fa-solid fa-plus"></i>
+                  Agregar
+                </button>
+              </div>
+
+              <div
+                id="technology-tags"
+                class="technology-tags-editor"
+              ></div>
+
+              <small>
+                Puedes agregar hasta 12 tecnologías.
+              </small>
+              </div>
 
               <small>Sepáralas utilizando comas.</small>
             </div>
