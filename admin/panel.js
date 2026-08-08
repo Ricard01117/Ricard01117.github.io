@@ -63,6 +63,7 @@ const supabase = configuracionLista
 let proyectos = [];
 let proyectoEnEdicion = null;
 let tecnologiasFormulario = [];
+
 let elementos = {};
 
 /* =====================================================
@@ -346,6 +347,11 @@ function renderizarTecnologiasFormulario() {
       eliminar.type = "button";
       eliminar.className =
         "technology-chip-remove";
+
+      eliminar.setAttribute(
+        "aria-label",
+        `Eliminar ${tecnologia}`
+      );
 
       eliminar.innerHTML =
         '<i class="fa-solid fa-xmark"></i>';

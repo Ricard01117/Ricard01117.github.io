@@ -1105,13 +1105,3 @@ a {
   color: #ffffff;
   background: rgba(255, 85, 119, 0.35);
 }
-
-@media (max-width: 600px) {
-  .technology-input-row {
-    grid-template-columns: 1fr;
-  }
-
-  .technology-add-button {
-    width: 100%;
-  }
-}
