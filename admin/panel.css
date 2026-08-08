@@ -1105,3 +1105,12 @@ a {
   color: #ffffff;
   background: rgba(255, 85, 119, 0.35);
 }
+
+/* =========================
+   OCULTAR EDITOR CERRADO
+========================= */
+
+.workspace.form-closed #form-panel,
+#form-panel.closed {
+  display: none !important;
+}
