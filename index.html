@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="cyan">
 <head>
   <meta charset="UTF-8">
 
@@ -15,14 +15,14 @@
 
   <title>Ricardo Castro | Portafolio</title>
 
-  <link rel="stylesheet" href="estilos.css?v=11">
+  <link rel="stylesheet" href="estilos.css?v=15">
 
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
   >
 
-  <script type="module" src="script.js"></script>
+  <script type="module" src="script.js?v=15"></script>
 </head>
 
 <body>
@@ -39,11 +39,20 @@
         <span>/ README.md</span>
       </div>
 
+      <button
+        type="button"
+        id="theme-toggle"
+        class="theme-toggle"
+        aria-label="Cambiar tema de color"
+        title="Tema: Cyan"
+      >
+        <i class="fa-solid fa-palette"></i>
+      </button>
+
     </header>
 
     <section class="dashboard">
 
-      <!-- Perfil -->
       <aside class="profile-panel">
 
         <div class="profile-image-container">
@@ -66,7 +75,6 @@
           Ricard01117
         </p>
 
-        <!-- Línea con acceso oculto -->
         <button
           type="button"
           id="hidden-admin-access"
@@ -101,7 +109,6 @@
             LinkedIn
           </a>
 
-
         </div>
 
         <div class="contact-info">
@@ -128,9 +135,43 @@
 
         </div>
 
+        <section id="cv-section" class="cv-card">
+
+          <div class="cv-icon">
+            <i class="fa-solid fa-file-pdf"></i>
+          </div>
+
+          <div class="cv-content">
+
+            <div class="cv-info">
+              <span class="cv-label">CURRÍCULUM</span>
+
+              <h3>Ricardo Castro</h3>
+
+              <p id="cv-description">
+                Consulta o descarga mi CV profesional.
+              </p>
+            </div>
+
+            <a
+              id="cv-download-button"
+              class="cv-download-button disabled"
+              href="#"
+              aria-disabled="true"
+            >
+              <i class="fa-solid fa-download"></i>
+
+              <span id="cv-download-text">
+                CV no disponible
+              </span>
+            </a>
+
+          </div>
+
+        </section>
+
       </aside>
 
-      <!-- Contenido principal -->
       <div class="main-content">
 
         <section class="hero">
@@ -160,7 +201,6 @@
 
         </section>
 
-        <!-- Tecnologías -->
         <section class="panel technologies-section">
 
           <h3>
@@ -199,7 +239,6 @@
 
         </section>
 
-        <!-- Proyectos -->
         <section class="panel projects-section">
 
           <h3>

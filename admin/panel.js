@@ -3,645 +3,1476 @@
 import { createClient } from
   "https://esm.sh/@supabase/supabase-js@2";
 
-/* =====================================================
-   CONFIGURACIÓN DE SUPABASE
-===================================================== */
-
 const SUPABASE_URL =
   "https://uevftlxlqxtrjhkqecjp.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
   "sb_publishable_PLXTdDsz9AlyQV_KEYsG4A_7UGrCSpW";
 
-const LOGIN_URL = "./index.html";
+const LOGIN_URL =
+  "./index.html";
 
-const ICONOS_PERMITIDOS = new Set([
-  "fa-solid fa-code",
-  "fa-solid fa-graduation-cap",
-  "fa-solid fa-box-open",
-  "fa-solid fa-gamepad",
-  "fa-solid fa-laptop-code",
-  "fa-solid fa-database",
-  "fa-solid fa-gears",
-  "fa-regular fa-heart",
-  "fa-solid fa-chart-line",
-  "fa-solid fa-mobile-screen"
-]);
+const CV_BUCKET =
+  "cv";
 
-const TEMAS_PERMITIDOS = new Set([
-  "cyan-project",
-  "blue-project",
-  "purple-project",
-  "pink-project",
-  "green-project"
-]);
+const CV_TABLE =
+  "cv_portafolio";
 
-const configuracionLista =
-  SUPABASE_URL.startsWith("https://") &&
-  SUPABASE_URL.includes(".supabase.co") &&
-  SUPABASE_PUBLISHABLE_KEY.startsWith("sb_publishable_") &&
-  !SUPABASE_PUBLISHABLE_KEY.includes("PEGA_AQUI");
+const CV_PATH =
+  "ricardo-castro-cv.pdf";
 
-const supabase = configuracionLista
-  ? createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY,
-      {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true
-        }
+const CV_MAX_BYTES =
+  5 * 1024 * 1024;
+
+const ICONOS_PERMITIDOS =
+  new Set([
+    "fa-solid fa-code",
+    "fa-solid fa-graduation-cap",
+    "fa-solid fa-box-open",
+    "fa-solid fa-gamepad",
+    "fa-solid fa-laptop-code",
+    "fa-solid fa-database",
+    "fa-solid fa-gears",
+    "fa-regular fa-heart",
+    "fa-solid fa-chart-line",
+    "fa-solid fa-mobile-screen"
+  ]);
+
+const TEMAS_PERMITIDOS =
+  new Set([
+    "cyan-project",
+    "blue-project",
+    "purple-project",
+    "pink-project",
+    "green-project"
+  ]);
+
+const supabase =
+  createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
       }
-    )
-  : null;
-
-/* =====================================================
-   ESTADO DEL PANEL
-===================================================== */
+    }
+  );
 
 let proyectos = [];
-let proyectoEnEdicion = null;
-let tecnologiasFormulario = [];
+
+let proyectoEnEdicion =
+  null;
+
+let tecnologiasFormulario =
+  [];
+
+let curriculumActual =
+  null;
+
+let archivoCvSeleccionado =
+  null;
 
 let elementos = {};
 
-/* =====================================================
-   INICIO
-===================================================== */
-
-document.addEventListener("DOMContentLoaded", iniciarPanel);
+document.addEventListener(
+  "DOMContentLoaded",
+  iniciarPanel
+);
 
 async function iniciarPanel() {
   guardarReferencias();
 
   if (!validarElementos()) {
-    console.error("Faltan elementos necesarios en panel.html.");
+    console.error(
+      "Faltan elementos necesarios en panel.html."
+    );
+
     return;
   }
 
   configurarEventos();
 
-  if (!configuracionLista || !supabase) {
-    ocultarCarga();
-
-    mostrarMensaje(
-      "Falta colocar la Clave publicable de Supabase en panel.js.",
-      "warning"
-    );
-
-    return;
-  }
-
-  const usuarioValido = await comprobarUsuario();
+  const usuarioValido =
+    await comprobarUsuario();
 
   if (!usuarioValido) {
     return;
   }
 
-  supabase.auth.onAuthStateChange((_evento, sesion) => {
-    if (!sesion) {
-      window.location.replace(LOGIN_URL);
-    }
-  });
+  supabase.auth
+    .onAuthStateChange(
+      (_evento, sesion) => {
+        if (!sesion) {
+          window.location.replace(
+            LOGIN_URL
+          );
+        }
+      }
+    );
 
   cerrarFormulario();
-  await cargarProyectos();
 
-  ocultarCarga();
-  elementos.panel.classList.remove("hidden");
+  await Promise.all([
+    cargarProyectos(),
+    cargarCurriculum()
+  ]);
+
+  elementos.loading
+    .classList.add(
+      "hidden"
+    );
+
+  elementos.panel
+    .classList.remove(
+      "hidden"
+    );
 }
-
-/* =====================================================
-   REFERENCIAS DEL DOM
-===================================================== */
 
 function guardarReferencias() {
   elementos = {
-    loading: document.getElementById("loading-screen"),
-    panel: document.getElementById("admin-panel"),
-    workspace: document.querySelector(".workspace"),
+    loading:
+      document.getElementById(
+        "loading-screen"
+      ),
 
-    logoutButton: document.getElementById("logout-button"),
-    newProjectButton: document.getElementById(
-      "new-project-button"
-    ),
+    panel:
+      document.getElementById(
+        "admin-panel"
+      ),
 
-    formPanel: document.getElementById("form-panel"),
-    closeFormButton: document.getElementById(
-      "close-form-button"
-    ),
-    cancelButton: document.getElementById("cancel-button"),
+    workspace:
+      document.querySelector(
+        ".workspace"
+      ),
 
-    form: document.getElementById("project-form"),
-    formTitle: document.getElementById("form-title"),
-    projectId: document.getElementById("project-id"),
+    logoutButton:
+      document.getElementById(
+        "logout-button"
+      ),
 
-    title: document.getElementById("title"),
-    description: document.getElementById("description"),
-    descriptionCounter: document.getElementById(
-      "description-counter"
-    ),
+    newProjectButton:
+      document.getElementById(
+        "new-project-button"
+      ),
 
-    demoUrl: document.getElementById("demo-url"),
-    githubUrl: document.getElementById("github-url"),
+    formPanel:
+      document.getElementById(
+        "form-panel"
+      ),
 
-    technologyInput: document.getElementById(
-      "technology-input"
-    ),
+    closeFormButton:
+      document.getElementById(
+        "close-form-button"
+      ),
 
-    addTechnologyButton: document.getElementById(
-      "add-technology-button"
-    ),
+    cancelButton:
+      document.getElementById(
+        "cancel-button"
+      ),
 
-    technologyTags: document.getElementById(
-      "technology-tags"
-    ),
+    form:
+      document.getElementById(
+        "project-form"
+      ),
 
-    icon: document.getElementById("icon"),
-    theme: document.getElementById("theme"),
-    order: document.getElementById("order"),
-    published: document.getElementById("published"),
-    featured: document.getElementById("featured"),
-    iconPreview: document.getElementById("icon-preview"),
-    saveButton: document.getElementById("save-button"),
+    formTitle:
+      document.getElementById(
+        "form-title"
+      ),
 
-    panelMessage: document.getElementById("panel-message"),
+    projectId:
+      document.getElementById(
+        "project-id"
+      ),
 
-    totalProjects: document.getElementById("total-projects"),
+    title:
+      document.getElementById(
+        "title"
+      ),
 
-    publishedProjects: document.getElementById(
-      "published-projects"
-    ),
+    description:
+      document.getElementById(
+        "description"
+      ),
 
-    hiddenProjects: document.getElementById(
-      "hidden-projects"
-    ),
+    descriptionCounter:
+      document.getElementById(
+        "description-counter"
+      ),
 
-    featuredProjects: document.getElementById(
-      "featured-projects"
-    ),
+    demoUrl:
+      document.getElementById(
+        "demo-url"
+      ),
 
-    search: document.getElementById("project-search"),
+    githubUrl:
+      document.getElementById(
+        "github-url"
+      ),
 
-    statusFilter: document.getElementById(
-      "status-filter"
-    ),
+    technologyInput:
+      document.getElementById(
+        "technology-input"
+      ),
 
-    refreshButton: document.getElementById(
-      "refresh-button"
-    ),
+    addTechnologyButton:
+      document.getElementById(
+        "add-technology-button"
+      ),
 
-    projectsList: document.getElementById(
-      "projects-list"
-    ),
+    technologyTags:
+      document.getElementById(
+        "technology-tags"
+      ),
 
-    emptyState: document.getElementById(
-      "empty-state"
-    )
+    icon:
+      document.getElementById(
+        "icon"
+      ),
+
+    theme:
+      document.getElementById(
+        "theme"
+      ),
+
+    order:
+      document.getElementById(
+        "order"
+      ),
+
+    published:
+      document.getElementById(
+        "published"
+      ),
+
+    featured:
+      document.getElementById(
+        "featured"
+      ),
+
+    iconPreview:
+      document.getElementById(
+        "icon-preview"
+      ),
+
+    saveButton:
+      document.getElementById(
+        "save-button"
+      ),
+
+    panelMessage:
+      document.getElementById(
+        "panel-message"
+      ),
+
+    totalProjects:
+      document.getElementById(
+        "total-projects"
+      ),
+
+    publishedProjects:
+      document.getElementById(
+        "published-projects"
+      ),
+
+    hiddenProjects:
+      document.getElementById(
+        "hidden-projects"
+      ),
+
+    featuredProjects:
+      document.getElementById(
+        "featured-projects"
+      ),
+
+    search:
+      document.getElementById(
+        "project-search"
+      ),
+
+    statusFilter:
+      document.getElementById(
+        "status-filter"
+      ),
+
+    refreshButton:
+      document.getElementById(
+        "refresh-button"
+      ),
+
+    projectsList:
+      document.getElementById(
+        "projects-list"
+      ),
+
+    emptyState:
+      document.getElementById(
+        "empty-state"
+      ),
+
+    cvEmptyState:
+      document.getElementById(
+        "cv-empty-state"
+      ),
+
+    cvCurrentFile:
+      document.getElementById(
+        "cv-current-file"
+      ),
+
+    cvFileName:
+      document.getElementById(
+        "cv-file-name"
+      ),
+
+    cvUpdatedAt:
+      document.getElementById(
+        "cv-updated-at"
+      ),
+
+    cvFileInput:
+      document.getElementById(
+        "cv-file-input"
+      ),
+
+    cvSelectButton:
+      document.getElementById(
+        "cv-select-button"
+      ),
+
+    cvSelectedName:
+      document.getElementById(
+        "cv-selected-name"
+      ),
+
+    cvViewButton:
+      document.getElementById(
+        "cv-view-button"
+      ),
+
+    cvUploadButton:
+      document.getElementById(
+        "cv-upload-button"
+      ),
+
+    cvDeleteButton:
+      document.getElementById(
+        "cv-delete-button"
+      )
   };
 }
 
 function validarElementos() {
-  return Object.values(elementos).every(Boolean);
+  return Object.values(
+    elementos
+  ).every(Boolean);
 }
-
-/* =====================================================
-   EVENTOS
-===================================================== */
 
 function configurarEventos() {
-  elementos.logoutButton.addEventListener(
-    "click",
-    cerrarSesion
-  );
-
-  elementos.newProjectButton.addEventListener(
-    "click",
-    abrirNuevoProyecto
-  );
-
-  elementos.closeFormButton.addEventListener(
-    "click",
-    cerrarFormulario
-  );
-
-  elementos.cancelButton.addEventListener(
-    "click",
-    cerrarFormulario
-  );
-
-  elementos.form.addEventListener(
-    "submit",
-    guardarProyecto
-  );
-
-  elementos.description.addEventListener(
-    "input",
-    actualizarContador
-  );
-
-  elementos.icon.addEventListener(
-    "change",
-    actualizarVistaIcono
-  );
-
-  elementos.theme.addEventListener(
-    "change",
-    actualizarVistaIcono
-  );
-
-  elementos.search.addEventListener(
-    "input",
-    renderizarProyectos
-  );
-
-  elementos.statusFilter.addEventListener(
-    "change",
-    renderizarProyectos
-  );
-
-  elementos.refreshButton.addEventListener(
-    "click",
-    cargarProyectos
-  );
-
-  elementos.addTechnologyButton.addEventListener(
-    "click",
-    agregarTecnologiaFormulario
-  );
-
-  elementos.technologyInput.addEventListener(
-    "keydown",
-    (evento) => {
-      if (evento.key === "Enter") {
-        evento.preventDefault();
-        agregarTecnologiaFormulario();
-      }
-    }
-  );
-}
-
-/* =====================================================
-   TECNOLOGÍAS DEL FORMULARIO
-===================================================== */
-
-function agregarTecnologiaFormulario() {
-  const tecnologia =
-    elementos.technologyInput.value.trim();
-
-  if (!tecnologia) {
-    return;
-  }
-
-  if (tecnologiasFormulario.length >= 12) {
-    mostrarMensaje(
-      "Puedes agregar como máximo 12 tecnologías.",
-      "warning"
+  elementos.logoutButton
+    .addEventListener(
+      "click",
+      cerrarSesion
     );
-    return;
-  }
 
-  const yaExiste = tecnologiasFormulario.some(
-    (item) =>
-      item.toLowerCase() === tecnologia.toLowerCase()
-  );
+  elementos.newProjectButton
+    .addEventListener(
+      "click",
+      abrirNuevoProyecto
+    );
 
-  if (yaExiste) {
-    elementos.technologyInput.value = "";
-    elementos.technologyInput.focus();
-    return;
-  }
+  elementos.closeFormButton
+    .addEventListener(
+      "click",
+      cerrarFormulario
+    );
 
-  tecnologiasFormulario.push(tecnologia);
+  elementos.cancelButton
+    .addEventListener(
+      "click",
+      cerrarFormulario
+    );
 
-  elementos.technologyInput.value = "";
+  elementos.form
+    .addEventListener(
+      "submit",
+      guardarProyecto
+    );
 
-  renderizarTecnologiasFormulario();
-  elementos.technologyInput.focus();
+  elementos.description
+    .addEventListener(
+      "input",
+      actualizarContador
+    );
+
+  elementos.icon
+    .addEventListener(
+      "change",
+      actualizarVistaIcono
+    );
+
+  elementos.theme
+    .addEventListener(
+      "change",
+      actualizarVistaIcono
+    );
+
+  elementos.search
+    .addEventListener(
+      "input",
+      renderizarProyectos
+    );
+
+  elementos.statusFilter
+    .addEventListener(
+      "change",
+      renderizarProyectos
+    );
+
+  elementos.refreshButton
+    .addEventListener(
+      "click",
+      cargarProyectos
+    );
+
+  elementos.addTechnologyButton
+    .addEventListener(
+      "click",
+      agregarTecnologiaFormulario
+    );
+
+  elementos.technologyInput
+    .addEventListener(
+      "keydown",
+      (evento) => {
+        if (
+          evento.key ===
+          "Enter"
+        ) {
+          evento.preventDefault();
+
+          agregarTecnologiaFormulario();
+        }
+      }
+    );
+
+  elementos.cvSelectButton
+    .addEventListener(
+      "click",
+      () => {
+        elementos
+          .cvFileInput
+          .click();
+      }
+    );
+
+  elementos.cvFileInput
+    .addEventListener(
+      "change",
+      procesarSeleccionCv
+    );
+
+  elementos.cvUploadButton
+    .addEventListener(
+      "click",
+      subirCurriculum
+    );
+
+  elementos.cvViewButton
+    .addEventListener(
+      "click",
+      verCurriculum
+    );
+
+  elementos.cvDeleteButton
+    .addEventListener(
+      "click",
+      eliminarCurriculum
+    );
 }
-
-function eliminarTecnologiaFormulario(indice) {
-  tecnologiasFormulario.splice(indice, 1);
-  renderizarTecnologiasFormulario();
-}
-
-function renderizarTecnologiasFormulario() {
-  elementos.technologyTags.replaceChildren();
-
-  tecnologiasFormulario.forEach(
-    (tecnologia, indice) => {
-      const etiqueta =
-        document.createElement("span");
-
-      etiqueta.className = "technology-chip";
-
-      const texto =
-        document.createElement("span");
-
-      texto.textContent = tecnologia;
-
-      const eliminar =
-        document.createElement("button");
-
-      eliminar.type = "button";
-      eliminar.className =
-        "technology-chip-remove";
-
-      eliminar.setAttribute(
-        "aria-label",
-        `Eliminar ${tecnologia}`
-      );
-
-      eliminar.innerHTML =
-        '<i class="fa-solid fa-xmark"></i>';
-
-      eliminar.addEventListener(
-        "click",
-        () => eliminarTecnologiaFormulario(indice)
-      );
-
-      etiqueta.append(texto, eliminar);
-
-      elementos.technologyTags.appendChild(
-        etiqueta
-      );
-    }
-  );
-}
-
-function establecerTecnologiasFormulario(tecnologias) {
-  tecnologiasFormulario =
-    normalizarTecnologias(tecnologias).slice(0, 12);
-
-  renderizarTecnologiasFormulario();
-}
-
-/* =====================================================
-   SESIÓN
-===================================================== */
 
 async function comprobarUsuario() {
   try {
     const {
       data: { user },
       error
-    } = await supabase.auth.getUser();
+    } =
+      await supabase.auth
+        .getUser();
 
-    if (error || !user) {
-      window.location.replace(LOGIN_URL);
+    if (
+      error ||
+      !user
+    ) {
+      window.location.replace(
+        LOGIN_URL
+      );
+
       return false;
     }
 
     return true;
-  } catch (error) {
-    console.error("Error al verificar la sesión:", error);
 
-    window.location.replace(LOGIN_URL);
+  } catch {
+    window.location.replace(
+      LOGIN_URL
+    );
+
     return false;
   }
 }
 
 async function cerrarSesion() {
-  elementos.logoutButton.disabled = true;
-
   try {
-    await supabase.auth.signOut();
-  } catch (error) {
-    console.error("No fue posible cerrar sesión:", error);
+    await supabase.auth
+      .signOut();
 
+    window.location.replace(
+      LOGIN_URL
+    );
+  } catch {
     mostrarMensaje(
       "No fue posible cerrar la sesión.",
       "error"
     );
-  } finally {
-    elementos.logoutButton.disabled = false;
   }
 }
 
-/* =====================================================
-   CARGAR PROYECTOS
-===================================================== */
-
-async function cargarProyectos() {
-  establecerCargandoActualizacion(true);
-  limpiarMensaje();
-
+async function cargarCurriculum() {
   try {
-    const { data, error } = await supabase
-      .from("proyectos")
-      .select("*")
-      .order("orden", { ascending: true })
-      .order("created_at", { ascending: false });
+    const {
+      data,
+      error
+    } =
+      await supabase
+        .from(CV_TABLE)
+        .select(`
+          id,
+          nombre_archivo,
+          ruta,
+          actualizado_en,
+          activo
+        `)
+        .eq(
+          "id",
+          1
+        )
+        .maybeSingle();
 
     if (error) {
       throw error;
     }
 
-    proyectos = Array.isArray(data) ? data : [];
+    curriculumActual =
+      data?.activo
+        ? data
+        : null;
 
-    actualizarEstadisticas();
-    renderizarProyectos();
+    renderizarCurriculum();
+
   } catch (error) {
-    console.error("Error al cargar proyectos:", error);
+    console.error(
+      error
+    );
+
+    curriculumActual =
+      null;
+
+    renderizarCurriculum();
 
     mostrarMensaje(
-      "No fue posible cargar los proyectos. Verifica las políticas RLS.",
-      "error"
+      "No fue posible consultar el CV.",
+      "warning"
     );
-  } finally {
-    establecerCargandoActualizacion(false);
   }
 }
 
-/* =====================================================
-   RENDERIZAR PROYECTOS
-===================================================== */
+function renderizarCurriculum() {
+  if (curriculumActual) {
+    elementos.cvEmptyState
+      .classList.add(
+        "hidden"
+      );
 
-function renderizarProyectos() {
-  const termino = elementos.search.value
-    .trim()
-    .toLowerCase();
+    elementos.cvCurrentFile
+      .classList.remove(
+        "hidden"
+      );
 
-  const filtro = elementos.statusFilter.value;
+    elementos.cvFileName
+      .textContent =
+      curriculumActual
+        .nombre_archivo ||
+      "Ricardo-Castro-CV.pdf";
 
-  const resultados = proyectos.filter((proyecto) => {
-    const coincideTexto =
-      !termino ||
-      proyecto.titulo.toLowerCase().includes(termino) ||
-      proyecto.descripcion.toLowerCase().includes(termino) ||
-      normalizarTecnologias(proyecto.tecnologias)
-        .join(" ")
-        .toLowerCase()
-        .includes(termino);
+    elementos.cvUpdatedAt
+      .textContent =
+      curriculumActual
+        .actualizado_en
+        ? `Actualizado: ${formatearFecha(
+            curriculumActual
+              .actualizado_en
+          )}`
+        : "Sin fecha";
 
-    const coincideEstado =
-      filtro === "all" ||
-      (filtro === "published" && proyecto.publicado) ||
-      (filtro === "hidden" && !proyecto.publicado) ||
-      (filtro === "featured" && proyecto.destacado);
+    elementos.cvViewButton
+      .disabled = false;
 
-    return coincideTexto && coincideEstado;
-  });
+    elementos.cvDeleteButton
+      .disabled = false;
 
-  elementos.projectsList.replaceChildren();
+  } else {
+    elementos.cvEmptyState
+      .classList.remove(
+        "hidden"
+      );
 
-  if (resultados.length === 0) {
-    elementos.emptyState.classList.remove("hidden");
+    elementos.cvCurrentFile
+      .classList.add(
+        "hidden"
+      );
+
+    elementos.cvViewButton
+      .disabled = true;
+
+    elementos.cvDeleteButton
+      .disabled = true;
+  }
+
+  actualizarBotonSubirCv();
+}
+
+function procesarSeleccionCv() {
+  const archivo =
+    elementos.cvFileInput
+      .files?.[0] ??
+    null;
+
+  archivoCvSeleccionado =
+    null;
+
+  if (!archivo) {
+    elementos.cvSelectedName
+      .textContent =
+      "Ningún archivo seleccionado";
+
+    actualizarBotonSubirCv();
+
     return;
   }
 
-  elementos.emptyState.classList.add("hidden");
+  const esPdf =
+    archivo.type ===
+      "application/pdf" ||
+    archivo.name
+      .toLowerCase()
+      .endsWith(
+        ".pdf"
+      );
 
-  const fragmento = document.createDocumentFragment();
+  if (!esPdf) {
+    elementos.cvFileInput
+      .value = "";
 
-  resultados.forEach((proyecto) => {
-    fragmento.appendChild(crearTarjetaProyecto(proyecto));
-  });
+    mostrarMensaje(
+      "El archivo debe ser PDF.",
+      "error"
+    );
 
-  elementos.projectsList.appendChild(fragmento);
+    actualizarBotonSubirCv();
+
+    return;
+  }
+
+  if (
+    archivo.size >
+    CV_MAX_BYTES
+  ) {
+    elementos.cvFileInput
+      .value = "";
+
+    mostrarMensaje(
+      "El PDF no puede superar los 5 MB.",
+      "error"
+    );
+
+    actualizarBotonSubirCv();
+
+    return;
+  }
+
+  archivoCvSeleccionado =
+    archivo;
+
+  elementos.cvSelectedName
+    .textContent =
+    archivo.name;
+
+  actualizarBotonSubirCv();
 }
 
-function crearTarjetaProyecto(proyecto) {
-  const tema = obtenerTemaSeguro(proyecto.tema);
-  const icono = obtenerIconoSeguro(proyecto.icono);
+function actualizarBotonSubirCv() {
+  elementos.cvUploadButton
+    .disabled =
+    !archivoCvSeleccionado;
 
-  const tarjeta = document.createElement("article");
-  tarjeta.className = `admin-project-card ${tema}`;
+  elementos.cvUploadButton
+    .innerHTML =
+    curriculumActual
+      ? `
+        <i class="fa-solid fa-rotate"></i>
+        Reemplazar CV
+      `
+      : `
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        Subir CV
+      `;
+}
 
-  const cabecera = document.createElement("div");
-  cabecera.className = "project-card-header";
+async function subirCurriculum() {
+  if (
+    !archivoCvSeleccionado
+  ) {
+    return;
+  }
 
-  const contenedorIcono = document.createElement("div");
-  contenedorIcono.className = "project-card-icon";
+  const archivo =
+    archivoCvSeleccionado;
 
-  const elementoIcono = document.createElement("i");
-  elementoIcono.className = icono;
+  try {
+    elementos.cvUploadButton
+      .disabled = true;
 
-  contenedorIcono.appendChild(elementoIcono);
+    const {
+      error:
+        storageError
+    } =
+      await supabase
+        .storage
+        .from(
+          CV_BUCKET
+        )
+        .upload(
+          CV_PATH,
+          archivo,
+          {
+            cacheControl:
+              "0",
 
-  const contenido = document.createElement("div");
+            contentType:
+              "application/pdf",
 
-  const titulo = document.createElement("h3");
-  titulo.className = "project-card-title";
-  titulo.textContent = proyecto.titulo;
+            upsert:
+              true
+          }
+        );
 
-  const descripcion = document.createElement("p");
-  descripcion.className = "project-card-description";
-  descripcion.textContent = proyecto.descripcion;
+    if (storageError) {
+      throw storageError;
+    }
 
-  contenido.append(titulo, descripcion);
-  cabecera.append(contenedorIcono, contenido);
+    const datosCv = {
+      id: 1,
 
-  const etiquetas = document.createElement("div");
-  etiquetas.className = "project-tags";
+      nombre_archivo:
+        archivo.name,
 
-  normalizarTecnologias(proyecto.tecnologias)
-    .forEach((tecnologia) => {
-      const etiqueta = document.createElement("span");
-      etiqueta.className = "project-tag";
-      etiqueta.textContent = tecnologia;
+      ruta:
+        CV_PATH,
 
-      etiquetas.appendChild(etiqueta);
-    });
+      actualizado_en:
+        new Date()
+          .toISOString(),
 
-  const meta = document.createElement("div");
-  meta.className = "project-meta";
+      activo:
+        true
+    };
+
+    const {
+      data,
+      error
+    } =
+      await supabase
+        .from(
+          CV_TABLE
+        )
+        .upsert(
+          datosCv,
+          {
+            onConflict:
+              "id"
+          }
+        )
+        .select()
+        .single();
+
+    if (error) {
+      throw error;
+    }
+
+    curriculumActual =
+      data;
+
+    archivoCvSeleccionado =
+      null;
+
+    elementos.cvFileInput
+      .value = "";
+
+    elementos.cvSelectedName
+      .textContent =
+      "Ningún archivo seleccionado";
+
+    renderizarCurriculum();
+
+    mostrarMensaje(
+      "CV publicado correctamente.",
+      "success"
+    );
+
+  } catch (error) {
+    console.error(
+      error
+    );
+
+    mostrarMensaje(
+      "No fue posible subir el CV.",
+      "error"
+    );
+
+  } finally {
+    actualizarBotonSubirCv();
+  }
+}
+
+function verCurriculum() {
+  if (
+    !curriculumActual?.ruta
+  ) {
+    return;
+  }
+
+  const {
+    data
+  } =
+    supabase.storage
+      .from(
+        CV_BUCKET
+      )
+      .getPublicUrl(
+        curriculumActual.ruta
+      );
+
+  if (
+    !data?.publicUrl
+  ) {
+    return;
+  }
+
+  const url =
+    new URL(
+      data.publicUrl
+    );
+
+  url.searchParams.set(
+    "v",
+    curriculumActual
+      .actualizado_en ||
+      Date.now()
+  );
+
+  window.open(
+    url.href,
+    "_blank",
+    "noopener,noreferrer"
+  );
+}
+
+async function eliminarCurriculum() {
+  if (
+    !curriculumActual
+  ) {
+    return;
+  }
+
+  const confirmado =
+    window.confirm(
+      "¿Seguro que deseas eliminar el CV publicado?"
+    );
+
+  if (!confirmado) {
+    return;
+  }
+
+  try {
+    await supabase
+      .storage
+      .from(
+        CV_BUCKET
+      )
+      .remove([
+        curriculumActual
+          .ruta ||
+        CV_PATH
+      ]);
+
+    const {
+      error
+    } =
+      await supabase
+        .from(
+          CV_TABLE
+        )
+        .delete()
+        .eq(
+          "id",
+          1
+        );
+
+    if (error) {
+      throw error;
+    }
+
+    curriculumActual =
+      null;
+
+    archivoCvSeleccionado =
+      null;
+
+    elementos.cvFileInput
+      .value = "";
+
+    elementos.cvSelectedName
+      .textContent =
+      "Ningún archivo seleccionado";
+
+    renderizarCurriculum();
+
+    mostrarMensaje(
+      "CV eliminado correctamente.",
+      "success"
+    );
+
+  } catch (error) {
+    console.error(
+      error
+    );
+
+    mostrarMensaje(
+      "No fue posible eliminar el CV.",
+      "error"
+    );
+  }
+}
+
+function agregarTecnologiaFormulario() {
+  const tecnologia =
+    elementos
+      .technologyInput
+      .value
+      .trim();
+
+  if (!tecnologia) {
+    return;
+  }
+
+  if (
+    tecnologiasFormulario
+      .length >= 12
+  ) {
+    mostrarMensaje(
+      "Puedes agregar máximo 12 tecnologías.",
+      "warning"
+    );
+
+    return;
+  }
+
+  const existe =
+    tecnologiasFormulario.some(
+      (item) =>
+        item.toLowerCase() ===
+        tecnologia.toLowerCase()
+    );
+
+  if (existe) {
+    return;
+  }
+
+  tecnologiasFormulario
+    .push(
+      tecnologia
+    );
+
+  elementos
+    .technologyInput
+    .value = "";
+
+  renderizarTecnologiasFormulario();
+}
+
+function eliminarTecnologiaFormulario(
+  indice
+) {
+  tecnologiasFormulario
+    .splice(
+      indice,
+      1
+    );
+
+  renderizarTecnologiasFormulario();
+}
+
+function renderizarTecnologiasFormulario() {
+  elementos
+    .technologyTags
+    .replaceChildren();
+
+  tecnologiasFormulario
+    .forEach(
+      (
+        tecnologia,
+        indice
+      ) => {
+        const etiqueta =
+          document
+            .createElement(
+              "span"
+            );
+
+        etiqueta.className =
+          "technology-chip";
+
+        const texto =
+          document
+            .createElement(
+              "span"
+            );
+
+        texto.textContent =
+          tecnologia;
+
+        const eliminar =
+          document
+            .createElement(
+              "button"
+            );
+
+        eliminar.type =
+          "button";
+
+        eliminar.className =
+          "technology-chip-remove";
+
+        eliminar.innerHTML =
+          '<i class="fa-solid fa-xmark"></i>';
+
+        eliminar.addEventListener(
+          "click",
+          () => {
+            eliminarTecnologiaFormulario(
+              indice
+            );
+          }
+        );
+
+        etiqueta.append(
+          texto,
+          eliminar
+        );
+
+        elementos
+          .technologyTags
+          .appendChild(
+            etiqueta
+          );
+      }
+    );
+}
+
+async function cargarProyectos() {
+  try {
+    const {
+      data,
+      error
+    } =
+      await supabase
+        .from(
+          "proyectos"
+        )
+        .select("*")
+        .order(
+          "orden",
+          {
+            ascending:
+              true
+          }
+        )
+        .order(
+          "created_at",
+          {
+            ascending:
+              false
+          }
+        );
+
+    if (error) {
+      throw error;
+    }
+
+    proyectos =
+      Array.isArray(data)
+        ? data
+        : [];
+
+    actualizarEstadisticas();
+
+    renderizarProyectos();
+
+  } catch (error) {
+    console.error(
+      error
+    );
+
+    mostrarMensaje(
+      "No fue posible cargar los proyectos.",
+      "error"
+    );
+  }
+}
+
+function renderizarProyectos() {
+  const termino =
+    elementos.search
+      .value
+      .trim()
+      .toLowerCase();
+
+  const filtro =
+    elementos
+      .statusFilter
+      .value;
+
+  const resultados =
+    proyectos.filter(
+      (proyecto) => {
+        const texto =
+          [
+            proyecto.titulo,
+            proyecto.descripcion,
+            ...normalizarTecnologias(
+              proyecto.tecnologias
+            )
+          ]
+            .join(" ")
+            .toLowerCase();
+
+        const coincideTexto =
+          !termino ||
+          texto.includes(
+            termino
+          );
+
+        const coincideEstado =
+          filtro === "all" ||
+          (
+            filtro ===
+              "published" &&
+            proyecto.publicado
+          ) ||
+          (
+            filtro ===
+              "hidden" &&
+            !proyecto.publicado
+          ) ||
+          (
+            filtro ===
+              "featured" &&
+            proyecto.destacado
+          );
+
+        return (
+          coincideTexto &&
+          coincideEstado
+        );
+      }
+    );
+
+  elementos.projectsList
+    .replaceChildren();
+
+  elementos.emptyState
+    .classList.toggle(
+      "hidden",
+      resultados.length > 0
+    );
+
+  const fragmento =
+    document
+      .createDocumentFragment();
+
+  resultados.forEach(
+    (proyecto) => {
+      fragmento
+        .appendChild(
+          crearTarjetaProyecto(
+            proyecto
+          )
+        );
+    }
+  );
+
+  elementos.projectsList
+    .appendChild(
+      fragmento
+    );
+}
+
+function crearTarjetaProyecto(
+  proyecto
+) {
+  const tarjeta =
+    document.createElement(
+      "article"
+    );
+
+  tarjeta.className =
+    `admin-project-card ${obtenerTemaSeguro(
+      proyecto.tema
+    )}`;
+
+  const cabecera =
+    document.createElement(
+      "div"
+    );
+
+  cabecera.className =
+    "project-card-header";
+
+  const iconoContenedor =
+    document.createElement(
+      "div"
+    );
+
+  iconoContenedor.className =
+    "project-card-icon";
+
+  const icono =
+    document.createElement(
+      "i"
+    );
+
+  icono.className =
+    obtenerIconoSeguro(
+      proyecto.icono
+    );
+
+  iconoContenedor
+    .appendChild(
+      icono
+    );
+
+  const contenido =
+    document.createElement(
+      "div"
+    );
+
+  const titulo =
+    document.createElement(
+      "h3"
+    );
+
+  titulo.className =
+    "project-card-title";
+
+  titulo.textContent =
+    proyecto.titulo;
+
+  const descripcion =
+    document.createElement(
+      "p"
+    );
+
+  descripcion.className =
+    "project-card-description";
+
+  descripcion.textContent =
+    proyecto.descripcion;
+
+  contenido.append(
+    titulo,
+    descripcion
+  );
+
+  cabecera.append(
+    iconoContenedor,
+    contenido
+  );
+
+  const tags =
+    document.createElement(
+      "div"
+    );
+
+  tags.className =
+    "project-tags";
+
+  normalizarTecnologias(
+    proyecto.tecnologias
+  ).forEach(
+    (tecnologia) => {
+      const tag =
+        document.createElement(
+          "span"
+        );
+
+      tag.className =
+        "project-tag";
+
+      tag.textContent =
+        tecnologia;
+
+      tags.appendChild(
+        tag
+      );
+    }
+  );
+
+  const meta =
+    document.createElement(
+      "div"
+    );
+
+  meta.className =
+    "project-meta";
 
   meta.appendChild(
-    crearEstado(
-      proyecto.publicado ? "Publicado" : "Oculto",
+    crearBadge(
       proyecto.publicado
-        ? "fa-solid fa-eye"
-        : "fa-solid fa-eye-slash",
+        ? "Publicado"
+        : "Oculto",
+
       proyecto.publicado
         ? "published"
         : "hidden-project"
     )
   );
 
-  if (proyecto.destacado) {
+  if (
+    proyecto.destacado
+  ) {
     meta.appendChild(
-      crearEstado(
+      crearBadge(
         "Destacado",
-        "fa-solid fa-star",
         "featured"
       )
     );
   }
 
   meta.appendChild(
-    crearEstado(
+    crearBadge(
       `Orden ${proyecto.orden}`,
-      "fa-solid fa-arrow-down-1-9",
       "order"
     )
   );
 
-  const acciones = document.createElement("div");
-  acciones.className = "project-card-actions";
+  const acciones =
+    document.createElement(
+      "div"
+    );
 
-  const botonDemo = crearBotonAccion(
-    "Demo",
-    "fa-solid fa-arrow-up-right-from-square"
+  acciones.className =
+    "project-card-actions";
+
+  const demo =
+    crearBoton(
+      "Demo"
+    );
+
+  demo.addEventListener(
+    "click",
+    () => {
+      abrirEnlaceSeguro(
+        proyecto.url_demo
+      );
+    }
   );
 
-  botonDemo.addEventListener("click", () => {
-    abrirEnlaceSeguro(proyecto.url_demo);
-  });
+  const github =
+    crearBoton(
+      "GitHub"
+    );
 
-  const botonGitHub = crearBotonAccion(
-    "GitHub",
-    "fa-brands fa-github"
+  github.disabled =
+    !proyecto.url_github;
+
+  github.addEventListener(
+    "click",
+    () => {
+      abrirEnlaceSeguro(
+        proyecto.url_github
+      );
+    }
   );
 
-  botonGitHub.disabled = !proyecto.url_github;
+  const editar =
+    crearBoton(
+      "Editar"
+    );
 
-  botonGitHub.addEventListener("click", () => {
-    abrirEnlaceSeguro(proyecto.url_github);
-  });
-
-  const botonEditar = crearBotonAccion(
-    "Editar",
-    "fa-solid fa-pen"
+  editar.addEventListener(
+    "click",
+    () => {
+      abrirEdicionProyecto(
+        proyecto
+      );
+    }
   );
 
-  botonEditar.addEventListener("click", () => {
-    abrirEdicionProyecto(proyecto);
-  });
+  const estado =
+    crearBoton(
+      proyecto.publicado
+        ? "Ocultar"
+        : "Publicar"
+    );
 
-  const botonEstado = crearBotonAccion(
-    proyecto.publicado ? "Ocultar" : "Publicar",
-    proyecto.publicado
-      ? "fa-solid fa-eye-slash"
-      : "fa-solid fa-eye"
+  estado.addEventListener(
+    "click",
+    async () => {
+      await cambiarPublicacion(
+        proyecto
+      );
+    }
   );
 
-  botonEstado.addEventListener("click", () => {
-    cambiarPublicacion(proyecto, botonEstado);
-  });
+  const eliminar =
+    crearBoton(
+      "Eliminar",
+      true
+    );
 
-  const botonEliminar = crearBotonAccion(
-    "Eliminar",
-    "fa-solid fa-trash",
-    true
+  eliminar.addEventListener(
+    "click",
+    async () => {
+      await eliminarProyecto(
+        proyecto
+      );
+    }
   );
-
-  botonEliminar.addEventListener("click", () => {
-    eliminarProyecto(proyecto, botonEliminar);
-  });
 
   acciones.append(
-    botonDemo,
-    botonGitHub,
-    botonEditar,
-    botonEstado,
-    botonEliminar
+    demo,
+    github,
+    editar,
+    estado,
+    eliminar
   );
 
   tarjeta.append(
     cabecera,
-    etiquetas,
+    tags,
     meta,
     acciones
   );
@@ -649,511 +1480,614 @@ function crearTarjetaProyecto(proyecto) {
   return tarjeta;
 }
 
-function crearEstado(texto, icono, clase) {
-  const estado = document.createElement("span");
-  estado.className = `status-badge ${clase}`;
+function crearBadge(
+  texto,
+  clase
+) {
+  const badge =
+    document.createElement(
+      "span"
+    );
 
-  const elementoIcono = document.createElement("i");
-  elementoIcono.className = icono;
+  badge.className =
+    `status-badge ${clase}`;
 
-  const elementoTexto = document.createElement("span");
-  elementoTexto.textContent = texto;
+  badge.textContent =
+    texto;
 
-  estado.append(elementoIcono, elementoTexto);
-
-  return estado;
+  return badge;
 }
 
-function crearBotonAccion(texto, icono, peligro = false) {
-  const boton = document.createElement("button");
+function crearBoton(
+  texto,
+  peligro = false
+) {
+  const boton =
+    document.createElement(
+      "button"
+    );
 
-  boton.type = "button";
-  boton.className = peligro
-    ? "action-button danger"
-    : "action-button";
+  boton.type =
+    "button";
 
-  const elementoIcono = document.createElement("i");
-  elementoIcono.className = icono;
+  boton.className =
+    peligro
+      ? "action-button danger"
+      : "action-button";
 
-  const elementoTexto = document.createElement("span");
-  elementoTexto.textContent = texto;
-
-  boton.append(elementoIcono, elementoTexto);
+  boton.textContent =
+    texto;
 
   return boton;
 }
 
-/* =====================================================
-   CREAR Y EDITAR
-===================================================== */
-
 function abrirNuevoProyecto() {
-  proyectoEnEdicion = null;
+  proyectoEnEdicion =
+    null;
 
   elementos.form.reset();
 
-  tecnologiasFormulario = [];
+  tecnologiasFormulario =
+    [];
+
   renderizarTecnologiasFormulario();
 
-  elementos.projectId.value = "";
-  elementos.formTitle.textContent = "Nuevo proyecto";
-  elementos.published.checked = true;
-  elementos.featured.checked = true;
-  elementos.order.value = obtenerSiguienteOrden();
+  elementos.formTitle
+    .textContent =
+    "Nuevo proyecto";
 
-  actualizarContador();
-  actualizarVistaIcono();
+  elementos.published
+    .checked = true;
+
+  elementos.featured
+    .checked = true;
+
+  elementos.order
+    .value =
+    obtenerSiguienteOrden();
+
   abrirFormulario();
 
-  elementos.title.focus();
+  actualizarContador();
+
+  actualizarVistaIcono();
 }
 
-function abrirEdicionProyecto(proyecto) {
-  proyectoEnEdicion = proyecto;
+function abrirEdicionProyecto(
+  proyecto
+) {
+  proyectoEnEdicion =
+    proyecto;
 
-  elementos.projectId.value = proyecto.id;
-  elementos.formTitle.textContent = "Editar proyecto";
+  elementos.formTitle
+    .textContent =
+    "Editar proyecto";
 
-  elementos.title.value = proyecto.titulo;
-  elementos.description.value = proyecto.descripcion;
-  elementos.demoUrl.value = proyecto.url_demo;
-  elementos.githubUrl.value = proyecto.url_github || "";
+  elementos.title.value =
+    proyecto.titulo ?? "";
 
-  establecerTecnologiasFormulario(
-    proyecto.tecnologias
-  );
+  elementos.description.value =
+    proyecto.descripcion ?? "";
 
-  elementos.icon.value = obtenerIconoSeguro(
-    proyecto.icono
-  );
+  elementos.demoUrl.value =
+    proyecto.url_demo ?? "";
 
-  elementos.theme.value = obtenerTemaSeguro(
-    proyecto.tema
-  );
+  elementos.githubUrl.value =
+    proyecto.url_github ?? "";
 
-  elementos.order.value = proyecto.orden;
-  elementos.published.checked = proyecto.publicado;
-  elementos.featured.checked = proyecto.destacado;
+  elementos.icon.value =
+    obtenerIconoSeguro(
+      proyecto.icono
+    );
 
-  actualizarContador();
-  actualizarVistaIcono();
+  elementos.theme.value =
+    obtenerTemaSeguro(
+      proyecto.tema
+    );
+
+  elementos.order.value =
+    proyecto.orden ?? 0;
+
+  elementos.published.checked =
+    Boolean(
+      proyecto.publicado
+    );
+
+  elementos.featured.checked =
+    Boolean(
+      proyecto.destacado
+    );
+
+  tecnologiasFormulario =
+    normalizarTecnologias(
+      proyecto.tecnologias
+    );
+
+  renderizarTecnologiasFormulario();
+
   abrirFormulario();
 
-  elementos.title.focus();
+  actualizarContador();
+
+  actualizarVistaIcono();
 }
 
 function abrirFormulario() {
-  elementos.formPanel.classList.remove("closed");
-  elementos.workspace.classList.remove("form-closed");
+  elementos.formPanel
+    .classList.remove(
+      "closed"
+    );
 
-  elementos.formPanel.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+  elementos.workspace
+    .classList.remove(
+      "form-closed"
+    );
 }
 
 function cerrarFormulario() {
-  proyectoEnEdicion = null;
+  proyectoEnEdicion =
+    null;
 
   elementos.form.reset();
 
-  tecnologiasFormulario = [];
+  tecnologiasFormulario =
+    [];
+
   renderizarTecnologiasFormulario();
 
-  elementos.projectId.value = "";
+  elementos.formPanel
+    .classList.add(
+      "closed"
+    );
 
-  elementos.formPanel.classList.add("closed");
-  elementos.workspace.classList.add("form-closed");
-
-  actualizarContador();
-  actualizarVistaIcono();
+  elementos.workspace
+    .classList.add(
+      "form-closed"
+    );
 }
 
-async function guardarProyecto(evento) {
+async function guardarProyecto(
+  evento
+) {
   evento.preventDefault();
-  limpiarMensaje();
 
-  if (!elementos.form.checkValidity()) {
-    elementos.form.reportValidity();
+  if (
+    !elementos.form
+      .checkValidity()
+  ) {
+    elementos.form
+      .reportValidity();
+
     return;
   }
 
-  let datos;
+  if (
+    tecnologiasFormulario
+      .length === 0
+  ) {
+    mostrarMensaje(
+      "Agrega al menos una tecnología.",
+      "warning"
+    );
 
-  try {
-    datos = obtenerDatosFormulario();
-  } catch (error) {
-    mostrarMensaje(error.message, "error");
     return;
   }
 
-  establecerGuardando(true);
+  const datos = {
+    titulo:
+      elementos.title
+        .value
+        .trim(),
+
+    descripcion:
+      elementos.description
+        .value
+        .trim(),
+
+    url_demo:
+      validarUrl(
+        elementos.demoUrl
+          .value
+      ),
+
+    url_github:
+      elementos.githubUrl
+        .value
+        .trim()
+        ? validarUrl(
+            elementos.githubUrl
+              .value
+          )
+        : null,
+
+    tecnologias:
+      tecnologiasFormulario,
+
+    icono:
+      obtenerIconoSeguro(
+        elementos.icon.value
+      ),
+
+    tema:
+      obtenerTemaSeguro(
+        elementos.theme.value
+      ),
+
+    orden:
+      Number.parseInt(
+        elementos.order.value,
+        10
+      ),
+
+    publicado:
+      elementos.published.checked,
+
+    destacado:
+      elementos.featured.checked
+  };
 
   try {
-    let respuesta;
+    if (
+      proyectoEnEdicion
+    ) {
+      const {
+        error
+      } =
+        await supabase
+          .from(
+            "proyectos"
+          )
+          .update(
+            datos
+          )
+          .eq(
+            "id",
+            proyectoEnEdicion.id
+          );
 
-    if (proyectoEnEdicion) {
-      respuesta = await supabase
-        .from("proyectos")
-        .update(datos)
-        .eq("id", proyectoEnEdicion.id)
-        .select()
-        .single();
+      if (error) {
+        throw error;
+      }
+
     } else {
-      respuesta = await supabase
-        .from("proyectos")
-        .insert(datos)
-        .select()
-        .single();
+      const {
+        error
+      } =
+        await supabase
+          .from(
+            "proyectos"
+          )
+          .insert(
+            datos
+          );
+
+      if (error) {
+        throw error;
+      }
     }
 
-    if (respuesta.error) {
-      throw respuesta.error;
-    }
+    cerrarFormulario();
+
+    await cargarProyectos();
 
     mostrarMensaje(
-      proyectoEnEdicion
-        ? "Proyecto actualizado correctamente."
-        : "Proyecto creado correctamente.",
+      "Proyecto guardado correctamente.",
       "success"
     );
 
-    cerrarFormulario();
-    await cargarProyectos();
   } catch (error) {
-    console.error("Error al guardar el proyecto:", error);
+    console.error(
+      error
+    );
 
     mostrarMensaje(
-      "No fue posible guardar el proyecto. Verifica los campos y permisos.",
+      "No fue posible guardar el proyecto.",
       "error"
     );
-  } finally {
-    establecerGuardando(false);
   }
 }
 
-function obtenerDatosFormulario() {
-  const titulo = elementos.title.value.trim();
-  const descripcion = elementos.description.value.trim();
-
-  const urlDemo = validarUrl(
-    elementos.demoUrl.value,
-    true
-  );
-
-  const urlGitHub = validarUrl(
-    elementos.githubUrl.value,
-    false
-  );
-
-  const tecnologias = [
-    ...tecnologiasFormulario
-  ];
-
-  if (tecnologias.length === 0) {
-    throw new Error(
-      "Debes agregar al menos una tecnología."
-    );
-  }
-
-  const orden = Number.parseInt(
-    elementos.order.value,
-    10
-  );
-
-  if (!Number.isInteger(orden) || orden < 0) {
-    throw new Error(
-      "El orden debe ser un número entero mayor o igual a cero."
-    );
-  }
-
-  return {
-    titulo,
-    descripcion,
-    url_demo: urlDemo,
-    url_github: urlGitHub,
-    tecnologias,
-    icono: obtenerIconoSeguro(elementos.icon.value),
-    tema: obtenerTemaSeguro(elementos.theme.value),
-    publicado: elementos.published.checked,
-    destacado: elementos.featured.checked,
-    orden
-  };
-}
-
-/* =====================================================
-   PUBLICAR Y ELIMINAR
-===================================================== */
-
-async function cambiarPublicacion(proyecto, boton) {
-  boton.disabled = true;
-
+async function cambiarPublicacion(
+  proyecto
+) {
   try {
-    const nuevoEstado = !proyecto.publicado;
-
-    const { error } = await supabase
-      .from("proyectos")
-      .update({
-        publicado: nuevoEstado
-      })
-      .eq("id", proyecto.id);
+    const {
+      error
+    } =
+      await supabase
+        .from(
+          "proyectos"
+        )
+        .update({
+          publicado:
+            !proyecto.publicado
+        })
+        .eq(
+          "id",
+          proyecto.id
+        );
 
     if (error) {
       throw error;
     }
 
-    mostrarMensaje(
-      nuevoEstado
-        ? "Proyecto publicado."
-        : "Proyecto ocultado.",
-      "success"
-    );
-
     await cargarProyectos();
-  } catch (error) {
-    console.error(
-      "Error al cambiar publicación:",
-      error
-    );
 
+  } catch {
     mostrarMensaje(
-      "No fue posible cambiar el estado del proyecto.",
+      "No fue posible cambiar el estado.",
       "error"
     );
-  } finally {
-    boton.disabled = false;
   }
 }
 
-async function eliminarProyecto(proyecto, boton) {
-  const confirmado = window.confirm(
-    `¿Seguro que deseas eliminar "${proyecto.titulo}"?\n\nEsta acción no se puede deshacer.`
-  );
+async function eliminarProyecto(
+  proyecto
+) {
+  const confirmado =
+    window.confirm(
+      `¿Seguro que deseas eliminar "${proyecto.titulo}"?`
+    );
 
   if (!confirmado) {
     return;
   }
 
-  boton.disabled = true;
-
   try {
-    const { error } = await supabase
-      .from("proyectos")
-      .delete()
-      .eq("id", proyecto.id);
+    const {
+      error
+    } =
+      await supabase
+        .from(
+          "proyectos"
+        )
+        .delete()
+        .eq(
+          "id",
+          proyecto.id
+        );
 
     if (error) {
       throw error;
     }
 
+    await cargarProyectos();
+
     mostrarMensaje(
-      "Proyecto eliminado correctamente.",
+      "Proyecto eliminado.",
       "success"
     );
 
-    if (proyectoEnEdicion?.id === proyecto.id) {
-      cerrarFormulario();
-    }
-
-    await cargarProyectos();
-  } catch (error) {
-    console.error("Error al eliminar proyecto:", error);
-
+  } catch {
     mostrarMensaje(
       "No fue posible eliminar el proyecto.",
       "error"
     );
-  } finally {
-    boton.disabled = false;
   }
 }
 
-/* =====================================================
-   ESTADÍSTICAS
-===================================================== */
-
 function actualizarEstadisticas() {
-  elementos.totalProjects.textContent = String(
-    proyectos.length
-  );
+  elementos.totalProjects
+    .textContent =
+    String(
+      proyectos.length
+    );
 
-  elementos.publishedProjects.textContent = String(
-    proyectos.filter((proyecto) => proyecto.publicado)
-      .length
-  );
+  elementos.publishedProjects
+    .textContent =
+    String(
+      proyectos.filter(
+        (p) =>
+          p.publicado
+      ).length
+    );
 
-  elementos.hiddenProjects.textContent = String(
-    proyectos.filter((proyecto) => !proyecto.publicado)
-      .length
-  );
+  elementos.hiddenProjects
+    .textContent =
+    String(
+      proyectos.filter(
+        (p) =>
+          !p.publicado
+      ).length
+    );
 
-  elementos.featuredProjects.textContent = String(
-    proyectos.filter((proyecto) => proyecto.destacado)
-      .length
-  );
+  elementos.featuredProjects
+    .textContent =
+    String(
+      proyectos.filter(
+        (p) =>
+          p.destacado
+      ).length
+    );
 }
 
-/* =====================================================
-   UTILIDADES
-===================================================== */
-
 function actualizarContador() {
-  elementos.descriptionCounter.textContent = String(
-    elementos.description.value.length
-  );
+  elementos
+    .descriptionCounter
+    .textContent =
+    String(
+      elementos.description
+        .value.length
+    );
 }
 
 function actualizarVistaIcono() {
-  const icono = obtenerIconoSeguro(
-    elementos.icon.value
-  );
+  elementos.iconPreview
+    .className =
+    obtenerTemaSeguro(
+      elementos.theme.value
+    );
 
-  const tema = obtenerTemaSeguro(
-    elementos.theme.value
-  );
+  elementos.iconPreview
+    .innerHTML = "";
 
-  elementos.iconPreview.className = tema;
-  elementos.iconPreview.innerHTML = "";
+  const icono =
+    document.createElement(
+      "i"
+    );
 
-  const elementoIcono = document.createElement("i");
-  elementoIcono.className = icono;
+  icono.className =
+    obtenerIconoSeguro(
+      elementos.icon.value
+    );
 
-  elementos.iconPreview.appendChild(elementoIcono);
+  elementos.iconPreview
+    .appendChild(
+      icono
+    );
 }
 
 function obtenerSiguienteOrden() {
-  if (proyectos.length === 0) {
+  if (
+    proyectos.length === 0
+  ) {
     return 0;
   }
 
-  const mayorOrden = Math.max(
-    ...proyectos.map((proyecto) => {
-      const valor = Number(proyecto.orden);
-      return Number.isFinite(valor) ? valor : 0;
-    })
+  return (
+    Math.max(
+      ...proyectos.map(
+        (p) =>
+          Number(
+            p.orden
+          ) || 0
+      )
+    ) + 1
   );
-
-  return mayorOrden + 1;
 }
 
-function normalizarTecnologias(tecnologias) {
-  if (!Array.isArray(tecnologias)) {
-    return [];
-  }
-
-  return tecnologias
-    .map((tecnologia) => String(tecnologia).trim())
-    .filter(Boolean);
+function normalizarTecnologias(
+  tecnologias
+) {
+  return Array.isArray(
+    tecnologias
+  )
+    ? tecnologias
+        .map(
+          (t) =>
+            String(t)
+              .trim()
+        )
+        .filter(Boolean)
+    : [];
 }
 
-function obtenerIconoSeguro(icono) {
-  return ICONOS_PERMITIDOS.has(icono)
-    ? icono
-    : "fa-solid fa-code";
+function obtenerIconoSeguro(
+  icono
+) {
+  return ICONOS_PERMITIDOS
+    .has(icono)
+      ? icono
+      : "fa-solid fa-code";
 }
 
-function obtenerTemaSeguro(tema) {
-  return TEMAS_PERMITIDOS.has(tema)
-    ? tema
-    : "cyan-project";
+function obtenerTemaSeguro(
+  tema
+) {
+  return TEMAS_PERMITIDOS
+    .has(tema)
+      ? tema
+      : "cyan-project";
 }
 
-function validarUrl(valor, obligatoria) {
-  const texto = valor.trim();
+function validarUrl(
+  valor
+) {
+  const url =
+    new URL(
+      valor.trim()
+    );
 
-  if (!texto && !obligatoria) {
-    return null;
-  }
-
-  if (!texto && obligatoria) {
+  if (
+    ![
+      "http:",
+      "https:"
+    ].includes(
+      url.protocol
+    )
+  ) {
     throw new Error(
-      "El enlace del proyecto publicado es obligatorio."
+      "URL inválida"
     );
   }
 
-  try {
-    const url = new URL(texto);
-
-    if (!["http:", "https:"].includes(url.protocol)) {
-      throw new Error();
-    }
-
-    return url.href;
-  } catch {
-    throw new Error(
-      "Los enlaces deben comenzar con http:// o https://."
-    );
-  }
+  return url.href;
 }
 
-function abrirEnlaceSeguro(enlace) {
+function abrirEnlaceSeguro(
+  enlace
+) {
   if (!enlace) {
     return;
   }
 
   try {
-    const url = new URL(enlace);
-
-    if (!["http:", "https:"].includes(url.protocol)) {
-      return;
-    }
-
     window.open(
-      url.href,
+      validarUrl(
+        enlace
+      ),
       "_blank",
       "noopener,noreferrer"
     );
   } catch {
     mostrarMensaje(
-      "El enlace del proyecto no es válido.",
+      "El enlace no es válido.",
       "error"
     );
   }
 }
 
-function establecerGuardando(guardando) {
-  elementos.saveButton.disabled = guardando;
+function formatearFecha(
+  fecha
+) {
+  try {
+    return new Intl
+      .DateTimeFormat(
+        "es-MX",
+        {
+          dateStyle:
+            "medium",
 
-  elementos.saveButton.innerHTML = guardando
-    ? `
-      <i class="fa-solid fa-circle-notch fa-spin"></i>
-      Guardando...
-    `
-    : `
-      <i class="fa-solid fa-floppy-disk"></i>
-      Guardar proyecto
-    `;
-}
+          timeStyle:
+            "short",
 
-function establecerCargandoActualizacion(cargando) {
-  elementos.refreshButton.disabled = cargando;
-
-  const icono = elementos.refreshButton.querySelector("i");
-
-  if (icono) {
-    icono.className = cargando
-      ? "fa-solid fa-rotate fa-spin"
-      : "fa-solid fa-rotate";
+          timeZone:
+            "America/Mexico_City"
+        }
+      )
+      .format(
+        new Date(
+          fecha
+        )
+      );
+  } catch {
+    return fecha;
   }
 }
 
-function mostrarMensaje(texto, tipo) {
-  elementos.panelMessage.textContent = texto;
-  elementos.panelMessage.className =
+function mostrarMensaje(
+  texto,
+  tipo
+) {
+  elementos.panelMessage
+    .textContent =
+    texto;
+
+  elementos.panelMessage
+    .className =
     `panel-message ${tipo}`;
 
-  window.clearTimeout(mostrarMensaje.temporizador);
+  clearTimeout(
+    mostrarMensaje.timer
+  );
 
-  mostrarMensaje.temporizador = window.setTimeout(() => {
-    limpiarMensaje();
-  }, 5000);
-}
-
-function limpiarMensaje() {
-  elementos.panelMessage.textContent = "";
-  elementos.panelMessage.className = "panel-message";
-}
-
-function ocultarCarga() {
-  elementos.loading.classList.add("hidden");
+  mostrarMensaje.timer =
+    setTimeout(
+      () => {
+        elementos
+          .panelMessage
+          .textContent = "";
+      },
+      6000
+    );
 }

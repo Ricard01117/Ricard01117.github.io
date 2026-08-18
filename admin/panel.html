@@ -8,38 +8,69 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <meta name="robots" content="noindex, nofollow">
+  <meta
+    name="robots"
+    content="noindex, nofollow"
+  >
 
-  <title>Panel de proyectos | Ricardo Castro</title>
+  <title>
+    Panel de proyectos | Ricardo Castro
+  </title>
 
-  <link rel="stylesheet" href="panel.css">
+  <link
+    rel="stylesheet"
+    href="panel.css?v=15"
+  >
 
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
   >
 
-  <script type="module" src="panel.js"></script>
+  <script
+    type="module"
+    src="panel.js?v=15"
+  ></script>
 </head>
 
 <body>
 
-  <div id="loading-screen" class="loading-screen">
-    <i class="fa-solid fa-circle-notch fa-spin"></i>
-    <p>Verificando sesión...</p>
+  <div
+    id="loading-screen"
+    class="loading-screen"
+  >
+    <i
+      class="fa-solid fa-circle-notch fa-spin"
+    ></i>
+
+    <p>
+      Verificando sesión...
+    </p>
   </div>
 
-  <main id="admin-panel" class="admin-panel hidden">
+  <main
+    id="admin-panel"
+    class="admin-panel hidden"
+  >
 
     <header class="panel-header">
 
       <div class="brand">
-        <span class="terminal-icon">&gt;_</span>
+
+        <span class="terminal-icon">
+          &gt;_
+        </span>
 
         <div>
-          <strong>Ricard01117</strong>
-          <span>/ administrador</span>
+          <strong>
+            Ricard01117
+          </strong>
+
+          <span>
+            / administrador
+          </span>
         </div>
+
       </div>
 
       <div class="header-actions">
@@ -50,7 +81,10 @@
           rel="noopener noreferrer"
           class="secondary-button"
         >
-          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          <i
+            class="fa-solid fa-arrow-up-right-from-square"
+          ></i>
+
           Ver portafolio
         </a>
 
@@ -59,7 +93,10 @@
           id="logout-button"
           class="logout-button"
         >
-          <i class="fa-solid fa-right-from-bracket"></i>
+          <i
+            class="fa-solid fa-right-from-bracket"
+          ></i>
+
           Cerrar sesión
         </button>
 
@@ -72,14 +109,21 @@
       <section class="dashboard-header">
 
         <div>
-          <p class="section-label">Panel administrativo</p>
 
-          <h1>Proyectos del portafolio</h1>
+          <p class="section-label">
+            Panel administrativo
+          </p>
+
+          <h1>
+            Proyectos del portafolio
+          </h1>
 
           <p>
-            Crea, edita, publica, ordena y elimina las tarjetas
+            Crea, edita, publica,
+            ordena y elimina las tarjetas
             visibles en tu portafolio.
           </p>
+
         </div>
 
         <button
@@ -88,6 +132,7 @@
           class="primary-button"
         >
           <i class="fa-solid fa-plus"></i>
+
           Nuevo proyecto
         </button>
 
@@ -96,40 +141,264 @@
       <section class="stats-grid">
 
         <article class="stat-card">
-          <i class="fa-solid fa-folder-open"></i>
+
+          <i
+            class="fa-solid fa-folder-open"
+          ></i>
 
           <div>
             <span>Total</span>
-            <strong id="total-projects">0</strong>
+
+            <strong
+              id="total-projects"
+            >
+              0
+            </strong>
           </div>
+
         </article>
 
         <article class="stat-card">
-          <i class="fa-solid fa-eye"></i>
+
+          <i
+            class="fa-solid fa-eye"
+          ></i>
 
           <div>
-            <span>Publicados</span>
-            <strong id="published-projects">0</strong>
+            <span>
+              Publicados
+            </span>
+
+            <strong
+              id="published-projects"
+            >
+              0
+            </strong>
           </div>
+
         </article>
 
         <article class="stat-card">
-          <i class="fa-solid fa-eye-slash"></i>
+
+          <i
+            class="fa-solid fa-eye-slash"
+          ></i>
 
           <div>
-            <span>Ocultos</span>
-            <strong id="hidden-projects">0</strong>
+            <span>
+              Ocultos
+            </span>
+
+            <strong
+              id="hidden-projects"
+            >
+              0
+            </strong>
           </div>
+
         </article>
 
         <article class="stat-card">
-          <i class="fa-solid fa-star"></i>
+
+          <i
+            class="fa-solid fa-star"
+          ></i>
 
           <div>
-            <span>Destacados</span>
-            <strong id="featured-projects">0</strong>
+            <span>
+              Destacados
+            </span>
+
+            <strong
+              id="featured-projects"
+            >
+              0
+            </strong>
           </div>
+
         </article>
+
+      </section>
+
+      <section class="cv-manager">
+
+        <div class="cv-manager-header">
+
+          <div>
+
+            <p class="section-label">
+              Currículum
+            </p>
+
+            <h2>
+              CV profesional
+            </h2>
+
+            <p>
+              Sube, reemplaza o elimina
+              el PDF que aparece para
+              descarga en tu portafolio.
+            </p>
+
+          </div>
+
+          <div class="cv-manager-icon">
+
+            <i
+              class="fa-solid fa-file-pdf"
+            ></i>
+
+          </div>
+
+        </div>
+
+        <div class="cv-manager-body">
+
+          <div
+            id="cv-empty-state"
+            class="cv-empty-state"
+          >
+
+            <i
+              class="fa-regular fa-file-pdf"
+            ></i>
+
+            <div>
+
+              <strong>
+                No hay un CV publicado
+              </strong>
+
+              <span>
+                Selecciona un PDF
+                para publicarlo.
+              </span>
+
+            </div>
+
+          </div>
+
+          <div
+            id="cv-current-file"
+            class="cv-current-file hidden"
+          >
+
+            <div class="cv-file-icon">
+
+              <i
+                class="fa-solid fa-file-pdf"
+              ></i>
+
+            </div>
+
+            <div class="cv-file-info">
+
+              <span>
+                CV actual
+              </span>
+
+              <strong
+                id="cv-file-name"
+              >
+                —
+              </strong>
+
+              <small
+                id="cv-updated-at"
+              >
+                —
+              </small>
+
+            </div>
+
+          </div>
+
+          <div class="cv-upload-area">
+
+            <input
+              type="file"
+              id="cv-file-input"
+              accept="application/pdf,.pdf"
+              hidden
+            >
+
+            <button
+              type="button"
+              id="cv-select-button"
+              class="secondary-button"
+            >
+              <i
+                class="fa-solid fa-folder-open"
+              ></i>
+
+              Seleccionar PDF
+            </button>
+
+            <div
+              class="cv-selected-file"
+            >
+
+              <span
+                id="cv-selected-name"
+              >
+                Ningún archivo
+                seleccionado
+              </span>
+
+              <small>
+                Solo PDF · Máximo 5 MB
+              </small>
+
+            </div>
+
+          </div>
+
+          <div
+            class="cv-manager-actions"
+          >
+
+            <button
+              type="button"
+              id="cv-view-button"
+              class="secondary-button"
+              disabled
+            >
+              <i
+                class="fa-solid fa-eye"
+              ></i>
+
+              Ver CV
+            </button>
+
+            <button
+              type="button"
+              id="cv-upload-button"
+              class="primary-button"
+              disabled
+            >
+              <i
+                class="fa-solid fa-cloud-arrow-up"
+              ></i>
+
+              Subir CV
+            </button>
+
+            <button
+              type="button"
+              id="cv-delete-button"
+              class="danger-button"
+              disabled
+            >
+              <i
+                class="fa-solid fa-trash"
+              ></i>
+
+              Eliminar CV
+            </button>
+
+          </div>
+
+        </div>
 
       </section>
 
@@ -140,15 +409,27 @@
         aria-live="polite"
       ></p>
 
-      <section class="workspace form-closed">
+      <section
+        class="workspace form-closed"
+      >
 
-        <aside id="form-panel" class="form-panel closed">
+        <aside
+          id="form-panel"
+          class="form-panel closed"
+        >
 
           <div class="form-header">
 
             <div>
-              <p class="section-label">Editor</p>
-              <h2 id="form-title">Nuevo proyecto</h2>
+
+              <p class="section-label">
+                Editor
+              </p>
+
+              <h2 id="form-title">
+                Nuevo proyecto
+              </h2>
+
             </div>
 
             <button
@@ -157,38 +438,47 @@
               class="icon-button"
               aria-label="Cerrar formulario"
             >
-              <i class="fa-solid fa-xmark"></i>
+              <i
+                class="fa-solid fa-xmark"
+              ></i>
             </button>
 
           </div>
 
-          <form id="project-form" novalidate>
+          <form
+            id="project-form"
+            novalidate
+          >
 
             <input
               type="hidden"
               id="project-id"
-              name="project-id"
             >
 
             <div class="form-group">
-              <label for="title">Nombre del proyecto</label>
+
+              <label for="title">
+                Nombre del proyecto
+              </label>
 
               <input
                 type="text"
                 id="title"
-                name="title"
                 maxlength="100"
                 placeholder="Ej. plataforma-academica"
                 required
               >
+
             </div>
 
             <div class="form-group">
-              <label for="description">Descripción</label>
+
+              <label for="description">
+                Descripción
+              </label>
 
               <textarea
                 id="description"
-                name="description"
                 maxlength="500"
                 rows="5"
                 placeholder="Describe brevemente el proyecto..."
@@ -196,11 +486,17 @@
               ></textarea>
 
               <small>
-                <span id="description-counter">0</span>/500
+                <span
+                  id="description-counter"
+                >
+                  0
+                </span>/500
               </small>
+
             </div>
 
             <div class="form-group">
+
               <label for="demo-url">
                 Enlace del proyecto publicado
               </label>
@@ -208,23 +504,25 @@
               <input
                 type="url"
                 id="demo-url"
-                name="demo-url"
                 placeholder="https://..."
                 required
               >
+
             </div>
 
             <div class="form-group">
+
               <label for="github-url">
-                Enlace del repositorio de GitHub
+                Enlace del repositorio
+                de GitHub
               </label>
 
               <input
                 type="url"
                 id="github-url"
-                name="github-url"
                 placeholder="https://github.com/..."
               >
+
             </div>
 
             <div class="form-group">
@@ -233,7 +531,9 @@
                 Tecnologías
               </label>
 
-              <div class="technology-input-row">
+              <div
+                class="technology-input-row"
+              >
 
                 <input
                   type="text"
@@ -248,7 +548,10 @@
                   id="add-technology-button"
                   class="secondary-button technology-add-button"
                 >
-                  <i class="fa-solid fa-plus"></i>
+                  <i
+                    class="fa-solid fa-plus"
+                  ></i>
+
                   Agregar
                 </button>
 
@@ -260,7 +563,8 @@
               ></div>
 
               <small>
-                Puedes agregar hasta 12 tecnologías.
+                Puedes agregar hasta
+                12 tecnologías.
               </small>
 
             </div>
@@ -268,75 +572,117 @@
             <div class="form-row">
 
               <div class="form-group">
-                <label for="icon">Icono</label>
 
-                <select id="icon" name="icon">
-                  <option value="fa-solid fa-code">
+                <label for="icon">
+                  Icono
+                </label>
+
+                <select id="icon">
+
+                  <option
+                    value="fa-solid fa-code"
+                  >
                     Código
                   </option>
 
-                  <option value="fa-solid fa-graduation-cap">
+                  <option
+                    value="fa-solid fa-graduation-cap"
+                  >
                     Académico
                   </option>
 
-                  <option value="fa-solid fa-box-open">
+                  <option
+                    value="fa-solid fa-box-open"
+                  >
                     Inventario
                   </option>
 
-                  <option value="fa-solid fa-gamepad">
+                  <option
+                    value="fa-solid fa-gamepad"
+                  >
                     Videojuegos
                   </option>
 
-                  <option value="fa-solid fa-laptop-code">
+                  <option
+                    value="fa-solid fa-laptop-code"
+                  >
                     Aplicación web
                   </option>
 
-                  <option value="fa-solid fa-database">
+                  <option
+                    value="fa-solid fa-database"
+                  >
                     Base de datos
                   </option>
 
-                  <option value="fa-solid fa-gears">
+                  <option
+                    value="fa-solid fa-gears"
+                  >
                     Automatización
                   </option>
 
-                  <option value="fa-regular fa-heart">
+                  <option
+                    value="fa-regular fa-heart"
+                  >
                     Artesanías
                   </option>
 
-                  <option value="fa-solid fa-chart-line">
+                  <option
+                    value="fa-solid fa-chart-line"
+                  >
                     Analítica
                   </option>
 
-                  <option value="fa-solid fa-mobile-screen">
+                  <option
+                    value="fa-solid fa-mobile-screen"
+                  >
                     Aplicación móvil
                   </option>
+
                 </select>
+
               </div>
 
               <div class="form-group">
-                <label for="theme">Color</label>
 
-                <select id="theme" name="theme">
-                  <option value="cyan-project">
+                <label for="theme">
+                  Color
+                </label>
+
+                <select id="theme">
+
+                  <option
+                    value="cyan-project"
+                  >
                     Cyan
                   </option>
 
-                  <option value="blue-project">
+                  <option
+                    value="blue-project"
+                  >
                     Azul
                   </option>
 
-                  <option value="purple-project">
+                  <option
+                    value="purple-project"
+                  >
                     Morado
                   </option>
 
-                  <option value="pink-project">
+                  <option
+                    value="pink-project"
+                  >
                     Rosa
                   </option>
 
-                  <option value="green-project">
+                  <option
+                    value="green-project"
+                  >
                     Verde
                   </option>
+
                 </select>
+
               </div>
 
             </div>
@@ -344,67 +690,94 @@
             <div class="form-row">
 
               <div class="form-group">
-                <label for="order">Orden</label>
+
+                <label for="order">
+                  Orden
+                </label>
 
                 <input
                   type="number"
                   id="order"
-                  name="order"
                   min="0"
                   step="1"
                   value="0"
                   required
                 >
+
               </div>
 
               <div class="preview-icon">
-                <span>Vista del icono</span>
+
+                <span>
+                  Vista del icono
+                </span>
 
                 <div id="icon-preview">
-                  <i class="fa-solid fa-code"></i>
+
+                  <i
+                    class="fa-solid fa-code"
+                  ></i>
+
                 </div>
+
               </div>
 
             </div>
 
             <div class="switches">
 
-              <label class="switch-field">
+              <label
+                class="switch-field"
+              >
 
                 <input
                   type="checkbox"
                   id="published"
-                  name="published"
                   checked
                 >
 
-                <span class="switch"></span>
+                <span
+                  class="switch"
+                ></span>
 
                 <span>
-                  <strong>Publicado</strong>
+
+                  <strong>
+                    Publicado
+                  </strong>
+
                   <small>
                     Visible en el portafolio
                   </small>
+
                 </span>
 
               </label>
 
-              <label class="switch-field">
+              <label
+                class="switch-field"
+              >
 
                 <input
                   type="checkbox"
                   id="featured"
-                  name="featured"
                   checked
                 >
 
-                <span class="switch"></span>
+                <span
+                  class="switch"
+                ></span>
 
                 <span>
-                  <strong>Destacado</strong>
+
+                  <strong>
+                    Destacado
+                  </strong>
+
                   <small>
                     Aparece en la sección principal
                   </small>
+
                 </span>
 
               </label>
@@ -426,7 +799,10 @@
                 id="save-button"
                 class="primary-button"
               >
-                <i class="fa-solid fa-floppy-disk"></i>
+                <i
+                  class="fa-solid fa-floppy-disk"
+                ></i>
+
                 Guardar proyecto
               </button>
 
@@ -436,11 +812,16 @@
 
         </aside>
 
-        <section class="projects-panel">
+        <section
+          class="projects-panel"
+        >
 
-          <div class="projects-toolbar">
+          <div
+            class="projects-toolbar"
+          >
 
             <div>
+
               <p class="section-label">
                 Contenido
               </p>
@@ -448,11 +829,14 @@
               <h2>
                 Proyectos registrados
               </h2>
+
             </div>
 
             <div class="filters">
 
-              <div class="search-container">
+              <div
+                class="search-container"
+              >
 
                 <i
                   class="fa-solid fa-magnifying-glass"
@@ -470,6 +854,7 @@
                 id="status-filter"
                 aria-label="Filtrar por estado"
               >
+
                 <option value="all">
                   Todos
                 </option>
@@ -485,6 +870,7 @@
                 <option value="featured">
                   Destacados
                 </option>
+
               </select>
 
               <button
@@ -493,7 +879,9 @@
                 class="icon-button"
                 aria-label="Actualizar proyectos"
               >
-                <i class="fa-solid fa-rotate"></i>
+                <i
+                  class="fa-solid fa-rotate"
+                ></i>
               </button>
 
             </div>
@@ -510,14 +898,17 @@
             class="empty-state hidden"
           >
 
-            <i class="fa-regular fa-folder-open"></i>
+            <i
+              class="fa-regular fa-folder-open"
+            ></i>
 
             <h3>
               No hay proyectos
             </h3>
 
             <p>
-              Crea tu primer proyecto utilizando el botón
+              Crea tu primer proyecto
+              utilizando el botón
               “Nuevo proyecto”.
             </p>
 

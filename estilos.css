@@ -4,8 +4,14 @@
   --panel: rgba(3, 18, 30, 0.94);
   --card: rgba(4, 22, 36, 0.94);
 
-  --cyan: #00e5ff;
-  --blue: #168cff;
+  --accent-rgb: 0, 229, 255;
+  --accent-2-rgb: 22, 140, 255;
+  --accent-light-rgb: 139, 251, 255;
+  --accent-highlight-rgb: 0, 239, 216;
+
+  --cyan: rgb(var(--accent-rgb));
+  --blue: rgb(var(--accent-2-rgb));
+
   --purple: #985cff;
   --pink: #f063d9;
   --green: #35e69a;
@@ -15,8 +21,22 @@
   --text: #f5f8ff;
   --text-secondary: #a7bad0;
 
-  --border: rgba(0, 229, 255, 0.2);
-  --border-strong: rgba(0, 229, 255, 0.55);
+  --border: rgba(var(--accent-rgb), 0.2);
+  --border-strong: rgba(var(--accent-rgb), 0.55);
+}
+
+html[data-theme="green"] {
+  --accent-rgb: 53, 230, 154;
+  --accent-2-rgb: 22, 199, 132;
+  --accent-light-rgb: 170, 255, 211;
+  --accent-highlight-rgb: 113, 255, 183;
+}
+
+html[data-theme="aurora"] {
+  --accent-rgb: 181, 104, 255;
+  --accent-2-rgb: 115, 92, 255;
+  --accent-light-rgb: 223, 186, 255;
+  --accent-highlight-rgb: 120, 226, 255;
 }
 
 * {
@@ -45,12 +65,12 @@ body {
   background:
     radial-gradient(
       circle at 15% 10%,
-      rgba(0, 229, 255, 0.08),
+      rgba(var(--accent-rgb), 0.08),
       transparent 28%
     ),
     radial-gradient(
       circle at 88% 18%,
-      rgba(22, 140, 255, 0.1),
+      rgba(var(--accent-2-rgb), 0.1),
       transparent 30%
     ),
     linear-gradient(
@@ -73,10 +93,6 @@ textarea {
   font: inherit;
 }
 
-/* =========================================
-   CONTENEDOR PRINCIPAL
-========================================= */
-
 .portfolio {
   position: relative;
 
@@ -96,8 +112,8 @@ textarea {
     );
 
   box-shadow:
-    0 0 25px rgba(0, 229, 255, 0.1),
-    inset 0 0 40px rgba(0, 140, 255, 0.03);
+    0 0 25px rgba(var(--accent-rgb), 0.1),
+    inset 0 0 40px rgba(var(--accent-rgb), 0.03);
 }
 
 .portfolio::before {
@@ -110,21 +126,17 @@ textarea {
 
   background-image:
     linear-gradient(
-      rgba(0, 229, 255, 0.025) 1px,
+      rgba(var(--accent-rgb), 0.025) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      rgba(0, 229, 255, 0.025) 1px,
+      rgba(var(--accent-rgb), 0.025) 1px,
       transparent 1px
     );
 
   background-size: 42px 42px;
 }
-
-/* =========================================
-   BARRA SUPERIOR
-========================================= */
 
 .topbar {
   position: relative;
@@ -132,11 +144,14 @@ textarea {
 
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 18px;
 
   min-height: 65px;
   padding: 0 36px;
 
-  border-bottom: 1px solid rgba(0, 229, 255, 0.15);
+  border-bottom:
+    1px solid rgba(var(--accent-rgb), 0.15);
 }
 
 .terminal-title {
@@ -162,9 +177,65 @@ textarea {
   font-weight: 800;
 }
 
-/* =========================================
-   ESTRUCTURA PRINCIPAL
-========================================= */
+.theme-toggle {
+  position: relative;
+  z-index: 5;
+
+  display: grid;
+  place-items: center;
+
+  width: 43px;
+  height: 43px;
+  flex: 0 0 43px;
+
+  border: 1px solid var(--border-strong);
+  border-radius: 11px;
+
+  color: var(--cyan);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(var(--accent-rgb), 0.09),
+      rgba(2, 13, 21, 0.94)
+    );
+
+  font-size: 19px;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 0 12px rgba(var(--accent-rgb), 0.16),
+    inset 0 0 13px rgba(var(--accent-rgb), 0.04);
+
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    background 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-2px) rotate(8deg);
+
+  border-color: var(--cyan);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(var(--accent-rgb), 0.18),
+      rgba(2, 13, 21, 0.96)
+    );
+
+  box-shadow:
+    0 0 19px rgba(var(--accent-rgb), 0.32),
+    inset 0 0 15px rgba(var(--accent-rgb), 0.08);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
 
 .dashboard {
   position: relative;
@@ -177,10 +248,6 @@ textarea {
   padding: 28px;
 }
 
-/* =========================================
-   PERFIL
-========================================= */
-
 .profile-panel {
   display: flex;
   flex-direction: column;
@@ -189,7 +256,8 @@ textarea {
   min-width: 0;
   padding: 15px 30px 30px;
 
-  border-right: 1px solid rgba(0, 229, 255, 0.15);
+  border-right:
+    1px solid rgba(var(--accent-rgb), 0.15);
 }
 
 .profile-image-container {
@@ -215,8 +283,8 @@ textarea {
   border-radius: 50%;
 
   box-shadow:
-    0 0 14px rgba(0, 229, 255, 0.8),
-    0 0 38px rgba(0, 229, 255, 0.3);
+    0 0 14px rgba(var(--accent-rgb), 0.8),
+    0 0 38px rgba(var(--accent-rgb), 0.3);
 }
 
 .profile-image-container::after {
@@ -227,11 +295,13 @@ textarea {
   width: 190px;
   height: 190px;
 
-  border: 7px solid #8bfbff;
+  border:
+    7px solid rgb(var(--accent-light-rgb));
+
   border-radius: 50%;
 
   box-shadow:
-    0 0 18px rgba(0, 229, 255, 0.5);
+    0 0 18px rgba(var(--accent-rgb), 0.5);
 }
 
 .profile-photo {
@@ -243,7 +313,6 @@ textarea {
   width: 181px;
   height: 181px;
 
-  padding: 0;
   border-radius: 50%;
 
   object-fit: cover;
@@ -252,16 +321,16 @@ textarea {
   background: #061520;
 
   box-shadow:
-    inset 0 0 20px rgba(0, 229, 255, 0.14),
-    0 0 12px rgba(0, 229, 255, 0.2);
+    inset 0 0 20px rgba(var(--accent-rgb), 0.14),
+    0 0 12px rgba(var(--accent-rgb), 0.2);
 }
-
-
 
 .orbit {
   position: absolute;
 
-  border: 1px solid rgba(0, 229, 255, 0.55);
+  border:
+    1px solid rgba(var(--accent-rgb), 0.55);
+
   border-radius: 50%;
 }
 
@@ -276,7 +345,8 @@ textarea {
   width: 255px;
   height: 88px;
 
-  border-color: rgba(22, 140, 255, 0.4);
+  border-color:
+    rgba(var(--accent-2-rgb), 0.4);
 
   transform: rotate(24deg);
 }
@@ -289,7 +359,7 @@ textarea {
 
   text-shadow:
     0 0 8px rgba(255, 255, 255, 0.45),
-    0 0 18px rgba(0, 229, 255, 0.18);
+    0 0 18px rgba(var(--accent-rgb), 0.18);
 }
 
 .username {
@@ -304,10 +374,6 @@ textarea {
   font-size: 21px;
   font-weight: 700;
 }
-
-/* =========================================
-   ACCESO OCULTO
-========================================= */
 
 .hidden-admin-access {
   position: relative;
@@ -324,14 +390,12 @@ textarea {
   border: none;
   outline: none;
 
-  color: inherit;
   background: transparent;
 
   cursor: default;
 
   appearance: none;
   -webkit-appearance: none;
-  -webkit-tap-highlight-color: transparent;
 
   box-shadow: none;
 }
@@ -340,19 +404,22 @@ textarea {
   content: "";
 
   position: absolute;
+
   left: 0;
   top: 12px;
 
   width: 100%;
   height: 1px;
 
-  background: rgba(0, 229, 255, 0.6);
+  background:
+    rgba(var(--accent-rgb), 0.6);
 }
 
 .hidden-admin-access::after {
   content: "";
 
   position: absolute;
+
   left: 50%;
   top: 11px;
 
@@ -366,44 +433,18 @@ textarea {
   transform: translateX(-50%);
 
   box-shadow:
-    0 0 8px rgba(0, 229, 255, 0.8),
-    0 0 18px rgba(0, 229, 255, 0.4);
+    0 0 8px rgba(var(--accent-rgb), 0.8),
+    0 0 18px rgba(var(--accent-rgb), 0.4);
 }
 
 .hidden-admin-access:hover,
 .hidden-admin-access:focus,
-.hidden-admin-access:focus-visible,
 .hidden-admin-access:active {
   border: none;
   outline: none;
 
-  color: inherit;
   background: transparent;
-
-  box-shadow: none;
 }
-
-.hidden-admin-access:hover::before,
-.hidden-admin-access:focus::before,
-.hidden-admin-access:focus-visible::before,
-.hidden-admin-access:active::before {
-  background: rgba(0, 229, 255, 0.6);
-}
-
-.hidden-admin-access:hover::after,
-.hidden-admin-access:focus::after,
-.hidden-admin-access:focus-visible::after,
-.hidden-admin-access:active::after {
-  background: var(--cyan);
-
-  box-shadow:
-    0 0 8px rgba(0, 229, 255, 0.8),
-    0 0 18px rgba(0, 229, 255, 0.4);
-}
-
-/* =========================================
-   DESCRIPCIÓN
-========================================= */
 
 .profile-description {
   max-width: 330px;
@@ -412,20 +453,13 @@ textarea {
   line-height: 1.55;
 }
 
-.profile-description strong {
-  color: var(--pink);
-}
-
-/* =========================================
-   REDES SOCIALES
-========================================= */
-
 .social-buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 18px;
 
   width: 100%;
+
   margin-top: 25px;
 }
 
@@ -436,6 +470,7 @@ textarea {
   gap: 11px;
 
   min-height: 52px;
+
   padding: 12px;
 
   border-radius: 9px;
@@ -452,31 +487,30 @@ textarea {
 .github-button {
   border: 2px solid var(--cyan);
 
-  background: rgba(0, 229, 255, 0.05);
+  background:
+    rgba(var(--accent-rgb), 0.05);
 
   box-shadow:
-    0 0 12px rgba(0, 229, 255, 0.42);
+    0 0 12px rgba(var(--accent-rgb), 0.42);
 }
 
 .linkedin-button {
   border: 2px solid var(--blue);
 
-  background: rgba(22, 140, 255, 0.05);
+  background:
+    rgba(var(--accent-2-rgb), 0.05);
 
   box-shadow:
-    0 0 12px rgba(22, 140, 255, 0.35);
+    0 0 12px rgba(var(--accent-2-rgb), 0.35);
 }
 
 .social-button:hover {
   transform: translateY(-4px);
 }
 
-/* =========================================
-   CONTACTO
-========================================= */
-
 .contact-info {
   width: 100%;
+
   margin-top: 22px;
 }
 
@@ -501,50 +535,258 @@ textarea {
   text-align: center;
 }
 
-/* =========================================
-   CONTENIDO DERECHO
-========================================= */
+.cv-card {
+  position: relative;
+
+  overflow: hidden;
+
+  display: grid;
+
+  grid-template-columns:
+    62px minmax(0, 1fr);
+
+  gap: 15px;
+
+  width: 100%;
+
+  margin-top: 24px;
+
+  padding: 18px;
+
+  border:
+    1px solid rgba(var(--accent-rgb), 0.25);
+
+  border-radius: 13px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(5, 24, 39, 0.96),
+      rgba(2, 15, 25, 0.98)
+    );
+
+  box-shadow:
+    0 0 15px rgba(var(--accent-rgb), 0.06),
+    inset 0 0 25px rgba(var(--accent-rgb), 0.025);
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.cv-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: -100%;
+
+  width: 70%;
+  height: 100%;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(var(--accent-rgb), 0.055),
+      transparent
+    );
+
+  transition: left 0.55s ease;
+}
+
+.cv-card:hover {
+  transform: translateY(-4px);
+
+  border-color:
+    rgba(var(--accent-rgb), 0.55);
+
+  box-shadow:
+    0 0 20px rgba(var(--accent-rgb), 0.13),
+    0 12px 25px rgba(0, 0, 0, 0.2);
+}
+
+.cv-card:hover::before {
+  left: 140%;
+}
+
+.cv-icon {
+  display: grid;
+  place-items: center;
+
+  width: 58px;
+  height: 58px;
+
+  border:
+    1px solid rgba(var(--accent-rgb), 0.35);
+
+  border-radius: 12px;
+
+  color: var(--cyan);
+
+  background:
+    rgba(var(--accent-rgb), 0.07);
+
+  box-shadow:
+    0 0 14px rgba(var(--accent-rgb), 0.14);
+}
+
+.cv-icon i {
+  font-size: 30px;
+
+  text-shadow:
+    0 0 10px rgba(var(--accent-rgb), 0.5);
+}
+
+.cv-content {
+  min-width: 0;
+}
+
+.cv-info {
+  margin-bottom: 14px;
+}
+
+.cv-label {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: var(--cyan);
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 1px;
+}
+
+.cv-info h3 {
+  margin-bottom: 5px;
+
+  color: var(--text);
+
+  font-size: 17px;
+}
+
+.cv-info p {
+  color: var(--text-secondary);
+
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.cv-download-button {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  width: 100%;
+
+  min-height: 42px;
+
+  padding: 10px 14px;
+
+  border: 1px solid var(--cyan);
+
+  border-radius: 8px;
+
+  color: var(--cyan);
+
+  background:
+    rgba(var(--accent-rgb), 0.05);
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  box-shadow:
+    0 0 10px rgba(var(--accent-rgb), 0.12);
+
+  transition:
+    color 0.22s ease,
+    background 0.22s ease,
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    opacity 0.22s ease;
+}
+
+.cv-download-button:hover:not(.disabled) {
+  color: #00131a;
+
+  background: var(--cyan);
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 0 18px rgba(var(--accent-rgb), 0.42);
+}
+
+.cv-download-button.disabled {
+  opacity: 0.45;
+
+  pointer-events: none;
+
+  cursor: default;
+}
 
 .main-content {
   display: flex;
+
   flex-direction: column;
+
   gap: 17px;
 
   width: 100%;
+
   min-width: 0;
 }
-
-/* =========================================
-   PRESENTACIÓN
-========================================= */
 
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 190px;
+
+  grid-template-columns:
+    minmax(0, 1fr) 190px;
+
   align-items: center;
+
   gap: 20px;
 
   min-width: 0;
+
   min-height: 215px;
+
   padding: 20px 24px;
 
-  border-bottom: 1px solid rgba(0, 229, 255, 0.14);
-}
-
-.hero-text {
-  min-width: 0;
+  border-bottom:
+    1px solid rgba(var(--accent-rgb), 0.14);
 }
 
 .hero h2 {
-  font-size: clamp(31px, 3vw, 45px);
+  font-size:
+    clamp(31px, 3vw, 45px);
+
   line-height: 1.15;
 }
 
 .hero h2 span {
-  color: #00efd8;
+  color:
+    rgb(var(--accent-highlight-rgb));
 
   text-shadow:
-    0 0 13px rgba(0, 239, 216, 0.4);
+    0 0 13px
+    rgba(var(--accent-highlight-rgb), 0.4);
 }
 
 .hero-line {
@@ -558,11 +800,12 @@ textarea {
   background: var(--cyan);
 
   box-shadow:
-    0 0 10px rgba(0, 229, 255, 0.7);
+    0 0 10px rgba(var(--accent-rgb), 0.7);
 }
 
 .hero pre {
   max-width: 100%;
+
   overflow-x: auto;
 
   color: #72abc1;
@@ -573,15 +816,16 @@ textarea {
     monospace;
 
   font-size: 13px;
+
   line-height: 1.55;
+
   white-space: pre-wrap;
 }
 
 .code-decoration {
   display: grid;
-  place-items: center;
 
-  min-width: 0;
+  place-items: center;
 }
 
 .code-decoration i {
@@ -590,20 +834,19 @@ textarea {
   font-size: 100px;
 
   text-shadow:
-    0 0 10px rgba(0, 229, 255, 0.9),
-    0 0 30px rgba(22, 140, 255, 0.5);
+    0 0 10px rgba(var(--accent-rgb), 0.9),
+    0 0 30px rgba(var(--accent-2-rgb), 0.5);
 }
-
-/* =========================================
-   PANELES
-========================================= */
 
 .panel {
   width: 100%;
+
   min-width: 0;
+
   overflow: hidden;
 
   border: 1px solid var(--border);
+
   border-radius: 15px;
 
   background:
@@ -616,12 +859,15 @@ textarea {
 
 .panel h3 {
   display: flex;
+
   align-items: center;
+
   gap: 10px;
 
   padding: 14px 17px 5px;
 
   font-size: 16px;
+
   text-transform: uppercase;
 }
 
@@ -629,39 +875,40 @@ textarea {
   color: var(--cyan);
 }
 
-/* =========================================
-   TECNOLOGÍAS
-========================================= */
-
 .technologies-section {
   padding-bottom: 14px;
 }
 
 .technology-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+
+  grid-template-columns:
+    repeat(5, minmax(0, 1fr));
+
   gap: 15px;
 
   width: 100%;
-  min-width: 0;
+
   padding: 13px 17px 0;
 }
 
 .technology-card {
   display: flex;
+
   flex-direction: column;
+
   align-items: center;
   justify-content: center;
+
   gap: 8px;
 
-  width: 100%;
-  min-width: 0;
   min-height: 92px;
+
   padding: 12px 8px;
 
-  overflow: hidden;
+  border:
+    1px solid rgba(var(--accent-rgb), 0.15);
 
-  border: 1px solid rgba(0, 229, 255, 0.15);
   border-radius: 10px;
 
   background:
@@ -680,29 +927,23 @@ textarea {
 .technology-card:hover {
   transform: translateY(-5px);
 
-  border-color: rgba(0, 229, 255, 0.55);
+  border-color:
+    rgba(var(--accent-rgb), 0.55);
 
   box-shadow:
-    0 0 17px rgba(0, 229, 255, 0.15);
+    0 0 17px rgba(var(--accent-rgb), 0.15);
 }
 
 .technology-card i {
-  display: block;
-
-  max-width: 100%;
-
-  font-size: clamp(27px, 3vw, 40px);
-  line-height: 1;
+  font-size:
+    clamp(27px, 3vw, 40px);
 }
 
 .technology-card span {
-  display: block;
+  font-size:
+    clamp(11px, 1.2vw, 14px);
 
-  max-width: 100%;
-
-  font-size: clamp(11px, 1.2vw, 14px);
   text-align: center;
-  overflow-wrap: anywhere;
 }
 
 .react-card i {
@@ -723,14 +964,7 @@ textarea {
 
 .laravel-card i {
   color: var(--red);
-
-  text-shadow:
-    0 0 12px rgba(255, 45, 32, 0.45);
 }
-
-/* =========================================
-   PROYECTOS
-========================================= */
 
 .projects-section {
   padding-bottom: 16px;
@@ -738,28 +972,35 @@ textarea {
 
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
   gap: 14px;
 
-  width: 100%;
-  min-width: 0;
   padding: 12px 17px 0;
 }
 
 .project-card {
   position: relative;
+
   overflow: hidden;
 
   display: grid;
-  grid-template-columns: 65px minmax(0, 1fr);
+
+  grid-template-columns:
+    65px minmax(0, 1fr);
+
   gap: 14px;
 
-  width: 100%;
-  min-width: 0;
   min-height: 145px;
-  padding: 17px 42px 17px 15px;
 
-  border: 1px solid rgba(0, 229, 255, 0.2);
+  padding:
+    17px 42px 17px 15px;
+
+  border:
+    1px solid rgba(var(--accent-rgb), 0.2);
+
   border-radius: 13px;
 
   background:
@@ -778,20 +1019,19 @@ textarea {
 .project-card:hover {
   transform: translateY(-5px);
 
-  border-color: rgba(0, 229, 255, 0.55);
+  border-color:
+    rgba(var(--accent-rgb), 0.55);
 
   box-shadow:
-    0 0 20px rgba(0, 229, 255, 0.13),
+    0 0 20px rgba(var(--accent-rgb), 0.13),
     0 12px 24px rgba(0, 0, 0, 0.2);
 }
 
 .project-icon {
   display: grid;
+
   place-items: center;
 
-  align-self: start;
-
-  min-width: 0;
   min-height: 62px;
 }
 
@@ -799,9 +1039,6 @@ textarea {
   color: var(--cyan);
 
   font-size: 43px;
-
-  text-shadow:
-    0 0 12px rgba(0, 229, 255, 0.5);
 }
 
 .project-content {
@@ -814,6 +1051,7 @@ textarea {
   color: var(--cyan);
 
   font-size: 17px;
+
   overflow-wrap: anywhere;
 }
 
@@ -821,13 +1059,15 @@ textarea {
   color: var(--text-secondary);
 
   font-size: 13px;
+
   line-height: 1.45;
-  overflow-wrap: anywhere;
 }
 
 .project-tags {
   display: flex;
+
   flex-wrap: wrap;
+
   gap: 13px;
 
   margin-top: 12px;
@@ -847,6 +1087,7 @@ textarea {
   content: "";
 
   position: absolute;
+
   left: 0;
   top: 50%;
 
@@ -858,27 +1099,22 @@ textarea {
   background: var(--cyan);
 
   transform: translateY(-50%);
-
-  box-shadow:
-    0 0 6px rgba(0, 229, 255, 0.6);
 }
 
 .project-arrow {
   position: absolute;
+
   right: 16px;
   top: 15px;
 
-  color: #00aaff;
+  color: var(--blue);
 
   font-size: 18px;
 }
 
-/* =========================================
-   TEMAS DE PROYECTOS
-========================================= */
-
 .pink-project {
-  border-color: rgba(240, 99, 217, 0.25);
+  border-color:
+    rgba(240, 99, 217, 0.25);
 }
 
 .pink-project .project-icon i,
@@ -891,7 +1127,8 @@ textarea {
 }
 
 .purple-project {
-  border-color: rgba(152, 92, 255, 0.28);
+  border-color:
+    rgba(152, 92, 255, 0.28);
 }
 
 .purple-project .project-icon i,
@@ -904,7 +1141,8 @@ textarea {
 }
 
 .blue-project {
-  border-color: rgba(22, 140, 255, 0.28);
+  border-color:
+    rgba(var(--accent-2-rgb), 0.28);
 }
 
 .blue-project .project-icon i,
@@ -917,7 +1155,8 @@ textarea {
 }
 
 .green-project {
-  border-color: rgba(53, 230, 154, 0.27);
+  border-color:
+    rgba(53, 230, 154, 0.27);
 }
 
 .green-project .project-icon i,
@@ -929,18 +1168,17 @@ textarea {
   background: var(--green);
 }
 
-/* =========================================
-   MENSAJES DE PROYECTOS
-========================================= */
-
 .projects-message {
   grid-column: 1 / -1;
 
   display: grid;
+
   place-items: center;
+
   gap: 12px;
 
   min-height: 170px;
+
   padding: 30px;
 
   color: var(--text-secondary);
@@ -954,31 +1192,107 @@ textarea {
   font-size: 34px;
 }
 
-/* =========================================
-   RESPONSIVE
-========================================= */
+html[data-theme="green"] body {
+  background:
+    radial-gradient(
+      circle at 15% 10%,
+      rgba(53, 230, 154, 0.09),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 88% 18%,
+      rgba(22, 199, 132, 0.1),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      #010604,
+      #03110b 50%,
+      #010704
+    );
+}
+
+html[data-theme="green"] .portfolio {
+  background:
+    linear-gradient(
+      rgba(1, 10, 7, 0.985),
+      rgba(2, 14, 9, 0.985)
+    );
+}
+
+html[data-theme="green"] .panel,
+html[data-theme="green"] .technology-card,
+html[data-theme="green"] .project-card,
+html[data-theme="green"] .cv-card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(3, 24, 16, 0.94),
+      rgba(1, 12, 8, 0.98)
+    );
+}
+
+html[data-theme="aurora"] body {
+  background:
+    radial-gradient(
+      circle at 16% 10%,
+      rgba(181, 104, 255, 0.13),
+      transparent 29%
+    ),
+    radial-gradient(
+      circle at 86% 14%,
+      rgba(70, 170, 255, 0.11),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 64% 92%,
+      rgba(115, 92, 255, 0.1),
+      transparent 32%
+    ),
+    linear-gradient(
+      135deg,
+      #05030a,
+      #110822 50%,
+      #04030b
+    );
+}
+
+html[data-theme="aurora"] .portfolio {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(8, 4, 18, 0.985),
+      rgba(12, 6, 27, 0.985)
+    );
+}
+
+html[data-theme="aurora"] .panel,
+html[data-theme="aurora"] .technology-card,
+html[data-theme="aurora"] .project-card,
+html[data-theme="aurora"] .cv-card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(21, 10, 40, 0.95),
+      rgba(8, 5, 20, 0.98)
+    );
+}
 
 @media (max-width: 1150px) {
   .technology-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .laravel-card {
-    grid-column: auto;
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 1050px) {
   .dashboard {
-    grid-template-columns: 330px minmax(0, 1fr);
+    grid-template-columns:
+      330px minmax(0, 1fr);
   }
 
   .projects-grid {
     grid-template-columns: 1fr;
-  }
-
-  .technology-grid {
-    gap: 10px;
   }
 }
 
@@ -993,7 +1307,9 @@ textarea {
 
   .profile-panel {
     border-right: none;
-    border-bottom: 1px solid rgba(0, 229, 255, 0.15);
+
+    border-bottom:
+      1px solid rgba(var(--accent-rgb), 0.15);
   }
 
   .hero {
@@ -1002,10 +1318,6 @@ textarea {
 
   .code-decoration {
     display: none;
-  }
-
-  .technology-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -1045,7 +1357,8 @@ textarea {
   }
 
   .technology-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
   }
 
   .laravel-card {
@@ -1053,12 +1366,39 @@ textarea {
   }
 
   .project-card {
-    grid-template-columns: 48px minmax(0, 1fr);
+    grid-template-columns:
+      48px minmax(0, 1fr);
 
-    padding: 14px 34px 14px 11px;
+    padding:
+      14px 34px 14px 11px;
   }
 
-  .project-icon i {
-    font-size: 34px;
+  .theme-toggle {
+    width: 40px;
+    height: 40px;
+
+    flex-basis: 40px;
+  }
+
+  .terminal-title {
+    min-width: 0;
+
+    font-size: 13px;
+  }
+
+  .cv-card {
+    grid-template-columns:
+      52px minmax(0, 1fr);
+
+    padding: 15px;
+  }
+
+  .cv-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .cv-icon i {
+    font-size: 25px;
   }
 }
