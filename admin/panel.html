@@ -14,12 +14,12 @@
   >
 
   <title>
-    Panel de proyectos | Ricardo Castro
+    Panel de contenido | Ricardo Castro
   </title>
 
   <link
     rel="stylesheet"
-    href="panel.css?v=15"
+    href="panel.css?v=16"
   >
 
   <link
@@ -29,7 +29,7 @@
 
   <script
     type="module"
-    src="panel.js?v=15"
+    src="panel.js?v=16"
   ></script>
 </head>
 
@@ -115,13 +115,12 @@
           </p>
 
           <h1>
-            Proyectos del portafolio
+            Contenido del portafolio
           </h1>
 
           <p>
-            Crea, edita, publica,
-            ordena y elimina las tarjetas
-            visibles en tu portafolio.
+            Administra tus proyectos, currículum y certificaciones
+            desde un solo lugar.
           </p>
 
         </div>
@@ -341,8 +340,7 @@
               <span
                 id="cv-selected-name"
               >
-                Ningún archivo
-                seleccionado
+                Ningún archivo seleccionado
               </span>
 
               <small>
@@ -395,6 +393,327 @@
 
               Eliminar CV
             </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <section class="certificates-manager">
+
+        <div class="certificates-manager-header">
+
+          <div>
+            <p class="section-label">
+              Credenciales tech
+            </p>
+
+            <h2>
+              Certificaciones
+            </h2>
+
+            <p>
+              Publica diplomas y certificados en PDF o imagen.
+              Cada archivo genera un enlace público para tu portafolio
+              y para usarlo como credencial en LinkedIn.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            id="new-certificate-button"
+            class="primary-button"
+          >
+            <i class="fa-solid fa-plus"></i>
+            Nuevo certificado
+          </button>
+
+        </div>
+
+        <div class="certificates-workspace">
+
+          <form
+            id="certificate-form"
+            class="certificate-form"
+          >
+
+            <div class="certificate-form-heading">
+              <div>
+                <span class="certificate-kicker">
+                  EDITOR
+                </span>
+
+                <h3 id="certificate-form-title">
+                  Nuevo certificado
+                </h3>
+              </div>
+
+              <div
+                id="certificate-category-preview"
+                class="certificate-category-preview"
+              >
+                <i class="fa-solid fa-code"></i>
+              </div>
+            </div>
+
+            <input
+              type="hidden"
+              id="certificate-id"
+            >
+
+            <div class="form-group">
+              <label for="certificate-name">
+                Nombre
+              </label>
+
+              <input
+                type="text"
+                id="certificate-name"
+                maxlength="140"
+                placeholder="Ej. Acelerador de Carrera con Power BI + IA"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="certificate-issuer">
+                Emisor
+              </label>
+
+              <input
+                type="text"
+                id="certificate-issuer"
+                maxlength="120"
+                placeholder="Ej. Daxus LATAM"
+                required
+              >
+            </div>
+
+            <div class="form-row">
+
+              <div class="form-group">
+                <label for="certificate-category">
+                  Categoría
+                </label>
+
+                <select
+                  id="certificate-category"
+                  required
+                >
+                  <option value="Data / BI">
+                    Data / BI
+                  </option>
+
+                  <option value="Database">
+                    Database
+                  </option>
+
+                  <option value="Cloud">
+                    Cloud
+                  </option>
+
+                  <option value="Development">
+                    Development
+                  </option>
+
+                  <option value="Automation">
+                    Automation
+                  </option>
+
+                  <option value="Security">
+                    Security
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="certificate-date">
+                  Fecha de emisión
+                </label>
+
+                <input
+                  type="date"
+                  id="certificate-date"
+                >
+              </div>
+
+            </div>
+
+            <div class="form-row">
+
+              <div class="form-group">
+                <label for="certificate-order">
+                  Orden
+                </label>
+
+                <input
+                  type="number"
+                  id="certificate-order"
+                  min="0"
+                  step="1"
+                  value="0"
+                  required
+                >
+              </div>
+
+              <div class="switches certificate-publish-switch">
+
+                <label class="switch-field">
+
+                  <input
+                    type="checkbox"
+                    id="certificate-active"
+                    checked
+                  >
+
+                  <span class="switch"></span>
+
+                  <span>
+                    <strong>
+                      Publicado
+                    </strong>
+
+                    <small>
+                      Visible en el portafolio
+                    </small>
+                  </span>
+
+                </label>
+
+              </div>
+
+            </div>
+
+            <div class="form-group">
+
+              <label for="certificate-file">
+                Archivo
+              </label>
+
+              <label
+                for="certificate-file"
+                class="certificate-dropzone"
+              >
+
+                <i
+                  class="fa-solid fa-cloud-arrow-up"
+                ></i>
+
+                <span>
+                  <strong
+                    id="certificate-selected-name"
+                  >
+                    Seleccionar certificado
+                  </strong>
+
+                  <small>
+                    PDF, JPG, PNG o WEBP · Máximo 10 MB
+                  </small>
+                </span>
+
+              </label>
+
+              <input
+                type="file"
+                id="certificate-file"
+                accept="application/pdf,image/jpeg,image/png,image/webp,.pdf,.jpg,.jpeg,.png,.webp"
+                hidden
+              >
+
+              <small
+                id="certificate-file-help"
+              >
+                Al editar, puedes dejar este campo vacío para conservar el archivo actual.
+              </small>
+
+            </div>
+
+            <div class="form-actions">
+
+              <button
+                type="button"
+                id="certificate-cancel-button"
+                class="secondary-button"
+              >
+                Limpiar
+              </button>
+
+              <button
+                type="submit"
+                id="certificate-save-button"
+                class="primary-button"
+              >
+                <i
+                  class="fa-solid fa-floppy-disk"
+                ></i>
+
+                Guardar certificado
+              </button>
+
+            </div>
+
+          </form>
+
+          <div class="certificates-list-panel">
+
+            <div class="certificates-list-toolbar">
+
+              <div>
+                <span class="certificate-kicker">
+                  PUBLICADOS / ARCHIVO
+                </span>
+
+                <h3>
+                  Certificados registrados
+                </h3>
+              </div>
+
+              <div class="certificate-list-actions">
+
+                <span
+                  id="certificates-count"
+                  class="certificates-count"
+                >
+                  0
+                </span>
+
+                <button
+                  type="button"
+                  id="refresh-certificates-button"
+                  class="icon-button"
+                  aria-label="Actualizar certificados"
+                >
+                  <i
+                    class="fa-solid fa-rotate"
+                  ></i>
+                </button>
+
+              </div>
+
+            </div>
+
+            <div
+              id="certificates-list"
+              class="certificates-admin-list"
+            ></div>
+
+            <div
+              id="certificates-empty-state"
+              class="certificate-empty-state hidden"
+            >
+              <i
+                class="fa-solid fa-certificate"
+              ></i>
+
+              <h3>
+                No hay certificados
+              </h3>
+
+              <p>
+                Sube tu primera credencial técnica desde el editor.
+              </p>
+            </div>
 
           </div>
 
@@ -513,8 +832,7 @@
             <div class="form-group">
 
               <label for="github-url">
-                Enlace del repositorio
-                de GitHub
+                Enlace del repositorio de GitHub
               </label>
 
               <input
@@ -563,8 +881,7 @@
               ></div>
 
               <small>
-                Puedes agregar hasta
-                12 tecnologías.
+                Puedes agregar hasta 12 tecnologías.
               </small>
 
             </div>
@@ -579,63 +896,43 @@
 
                 <select id="icon">
 
-                  <option
-                    value="fa-solid fa-code"
-                  >
+                  <option value="fa-solid fa-code">
                     Código
                   </option>
 
-                  <option
-                    value="fa-solid fa-graduation-cap"
-                  >
+                  <option value="fa-solid fa-graduation-cap">
                     Académico
                   </option>
 
-                  <option
-                    value="fa-solid fa-box-open"
-                  >
+                  <option value="fa-solid fa-box-open">
                     Inventario
                   </option>
 
-                  <option
-                    value="fa-solid fa-gamepad"
-                  >
+                  <option value="fa-solid fa-gamepad">
                     Videojuegos
                   </option>
 
-                  <option
-                    value="fa-solid fa-laptop-code"
-                  >
+                  <option value="fa-solid fa-laptop-code">
                     Aplicación web
                   </option>
 
-                  <option
-                    value="fa-solid fa-database"
-                  >
+                  <option value="fa-solid fa-database">
                     Base de datos
                   </option>
 
-                  <option
-                    value="fa-solid fa-gears"
-                  >
+                  <option value="fa-solid fa-gears">
                     Automatización
                   </option>
 
-                  <option
-                    value="fa-regular fa-heart"
-                  >
+                  <option value="fa-regular fa-heart">
                     Artesanías
                   </option>
 
-                  <option
-                    value="fa-solid fa-chart-line"
-                  >
+                  <option value="fa-solid fa-chart-line">
                     Analítica
                   </option>
 
-                  <option
-                    value="fa-solid fa-mobile-screen"
-                  >
+                  <option value="fa-solid fa-mobile-screen">
                     Aplicación móvil
                   </option>
 
@@ -651,33 +948,23 @@
 
                 <select id="theme">
 
-                  <option
-                    value="cyan-project"
-                  >
+                  <option value="cyan-project">
                     Cyan
                   </option>
 
-                  <option
-                    value="blue-project"
-                  >
+                  <option value="blue-project">
                     Azul
                   </option>
 
-                  <option
-                    value="purple-project"
-                  >
+                  <option value="purple-project">
                     Morado
                   </option>
 
-                  <option
-                    value="pink-project"
-                  >
+                  <option value="pink-project">
                     Rosa
                   </option>
 
-                  <option
-                    value="green-project"
-                  >
+                  <option value="green-project">
                     Verde
                   </option>
 
@@ -907,8 +1194,7 @@
             </h3>
 
             <p>
-              Crea tu primer proyecto
-              utilizando el botón
+              Crea tu primer proyecto utilizando el botón
               “Nuevo proyecto”.
             </p>
 

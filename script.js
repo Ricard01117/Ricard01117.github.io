@@ -12,6 +12,18 @@ const SUPABASE_PUBLISHABLE_KEY =
 const CV_BUCKET = "cv";
 const CV_TABLE = "cv_portafolio";
 
+const CERTIFICATES_BUCKET = "certificados";
+const CERTIFICATES_TABLE = "certificados_portafolio";
+
+const CERTIFICATE_CATEGORIES = new Map([
+  ["Data / BI", "fa-solid fa-chart-column"],
+  ["Database", "fa-solid fa-database"],
+  ["Cloud", "fa-solid fa-cloud"],
+  ["Development", "fa-solid fa-code"],
+  ["Automation", "fa-solid fa-gears"],
+  ["Security", "fa-solid fa-shield-halved"]
+]);
+
 const ENLACES_DIRECTOS = new Map([
   [
     "plataforma-academica",
@@ -100,7 +112,8 @@ document.addEventListener(
 
     await Promise.all([
       cargarProyectos(),
-      cargarCurriculum()
+      cargarCurriculum(),
+      cargarCertificados()
     ]);
   }
 );
@@ -422,6 +435,331 @@ function establecerCvNoDisponible(
 
   descripcion.textContent =
     descripcionTexto;
+}
+
+async function cargarCertificados() {
+  const seccion =
+    document.getElementById(
+      "certifications-section"
+    );
+
+  const contenedor =
+    document.getElementById(
+      "certifications-list"
+    );
+
+  if (!seccion || !contenedor) {
+    return;
+  }
+
+  try {
+    const {
+      data,
+      error
+    } = await supabase
+      .from(CERTIFICATES_TABLE)
+      .select(`
+        id,
+        nombre,
+        emisor,
+        categoria,
+        fecha_emision,
+        nombre_archivo,
+        ruta,
+        tipo_archivo,
+        orden,
+        activo,
+        creado_en,
+        actualizado_en
+      `)
+      .eq("activo", true)
+      .order("orden", {
+        ascending: true
+      })
+      .order("fecha_emision", {
+        ascending: false,
+        nullsFirst: false
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    const certificados =
+      Array.isArray(data)
+        ? data
+        : [];
+
+    if (certificados.length === 0) {
+      seccion.classList.add(
+        "hidden"
+      );
+
+      contenedor.replaceChildren();
+      return;
+    }
+
+    renderizarCertificados(
+      certificados
+    );
+
+    seccion.classList.remove(
+      "hidden"
+    );
+
+  } catch (error) {
+    console.error(
+      "Error al cargar certificados:",
+      error
+    );
+
+    seccion.classList.add(
+      "hidden"
+    );
+  }
+}
+
+function renderizarCertificados(
+  certificados
+) {
+  const contenedor =
+    document.getElementById(
+      "certifications-list"
+    );
+
+  if (!contenedor) {
+    return;
+  }
+
+  contenedor.replaceChildren();
+
+  const fragmento =
+    document.createDocumentFragment();
+
+  certificados.forEach(
+    (certificado) => {
+      const enlace =
+        crearTarjetaCertificado(
+          certificado
+        );
+
+      if (enlace) {
+        fragmento.appendChild(
+          enlace
+        );
+      }
+    }
+  );
+
+  contenedor.appendChild(
+    fragmento
+  );
+}
+
+function crearTarjetaCertificado(
+  certificado
+) {
+  if (!certificado?.ruta) {
+    return null;
+  }
+
+  const {
+    data: publicData
+  } = supabase
+    .storage
+    .from(CERTIFICATES_BUCKET)
+    .getPublicUrl(
+      certificado.ruta
+    );
+
+  if (!publicData?.publicUrl) {
+    return null;
+  }
+
+  const enlace =
+    document.createElement(
+      "a"
+    );
+
+  enlace.className =
+    "certification-item";
+
+  enlace.href =
+    publicData.publicUrl;
+
+  enlace.target =
+    "_blank";
+
+  enlace.rel =
+    "noopener noreferrer";
+
+  const categoria =
+    obtenerCategoriaCertificado(
+      certificado.categoria
+    );
+
+  const iconoContenedor =
+    document.createElement(
+      "div"
+    );
+
+  iconoContenedor.className =
+    `certification-icon ${obtenerClaseCategoriaCertificado(
+      categoria
+    )}`;
+
+  const icono =
+    document.createElement(
+      "i"
+    );
+
+  icono.className =
+    CERTIFICATE_CATEGORIES.get(
+      categoria
+    );
+
+  iconoContenedor.appendChild(
+    icono
+  );
+
+  const contenido =
+    document.createElement(
+      "div"
+    );
+
+  contenido.className =
+    "certification-content";
+
+  const meta =
+    document.createElement(
+      "div"
+    );
+
+  meta.className =
+    "certification-meta";
+
+  const badge =
+    document.createElement(
+      "span"
+    );
+
+  badge.className =
+    "certification-badge";
+
+  badge.textContent =
+    categoria.toUpperCase();
+
+  const fecha =
+    document.createElement(
+      "span"
+    );
+
+  fecha.className =
+    "certification-date";
+
+  fecha.textContent =
+    formatearFechaCertificado(
+      certificado.fecha_emision
+    );
+
+  meta.append(
+    badge,
+    fecha
+  );
+
+  const titulo =
+    document.createElement(
+      "h4"
+    );
+
+  titulo.textContent =
+    certificado.nombre ||
+    "Certificado";
+
+  const emisor =
+    document.createElement(
+      "p"
+    );
+
+  emisor.textContent =
+    certificado.emisor ||
+    "Emisor no especificado";
+
+  contenido.append(
+    meta,
+    titulo,
+    emisor
+  );
+
+  const flecha =
+    document.createElement(
+      "i"
+    );
+
+  flecha.className =
+    "fa-solid fa-arrow-up-right-from-square certification-arrow";
+
+  enlace.append(
+    iconoContenedor,
+    contenido,
+    flecha
+  );
+
+  return enlace;
+}
+
+function obtenerCategoriaCertificado(
+  categoria
+) {
+  return CERTIFICATE_CATEGORIES.has(
+    categoria
+  )
+    ? categoria
+    : "Development";
+}
+
+function obtenerClaseCategoriaCertificado(
+  categoria
+) {
+  const clases = {
+    "Data / BI": "cert-data",
+    Database: "cert-database",
+    Cloud: "cert-cloud",
+    Development: "cert-development",
+    Automation: "cert-automation",
+    Security: "cert-security"
+  };
+
+  return clases[categoria] ||
+    "cert-development";
+}
+
+function formatearFechaCertificado(
+  fecha
+) {
+  if (!fecha) {
+    return "";
+  }
+
+  try {
+    return new Intl
+      .DateTimeFormat(
+        "es-MX",
+        {
+          month: "short",
+          year: "numeric",
+          timeZone: "UTC"
+        }
+      )
+      .format(
+        new Date(
+          `${fecha}T00:00:00Z`
+        )
+      )
+      .replace(".", "");
+  } catch {
+    return "";
+  }
 }
 
 async function cargarProyectos() {
