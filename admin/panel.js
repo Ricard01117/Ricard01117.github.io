@@ -732,88 +732,125 @@ function actualizarBotonSubirCv() {
 }
 
 async function subirCurriculum() {
-  if (
-    !archivoCvSeleccionado
-  ) {
+  if (!archivoCvSeleccionado) {
+    mostrarMensaje(
+      "Primero selecciona un archivo PDF.",
+      "warning"
+    );
+
     return;
   }
 
   const archivo =
     archivoCvSeleccionado;
 
+  const rutaAnterior =
+    curriculumActual?.ruta ||
+    null;
+
+  const nuevaRuta =
+    `ricardo-castro-cv-${Date.now()}.pdf`;
+
+  let archivoNuevoSubido =
+    false;
+
   try {
     elementos.cvUploadButton
       .disabled = true;
 
     const {
-      error:
-        storageError
-    } =
-      await supabase
-        .storage
-        .from(
-          CV_BUCKET
-        )
-        .upload(
-          CV_PATH,
-          archivo,
-          {
-            cacheControl:
-              "0",
+      data: { session },
+      error: sessionError
+    } = await supabase.auth
+      .getSession();
 
-            contentType:
-              "application/pdf",
+    if (
+      sessionError ||
+      !session
+    ) {
+      throw new Error(
+        "Tu sesión de administrador expiró. Inicia sesión nuevamente."
+      );
+    }
 
-            upsert:
-              true
-          }
-        );
+    const {
+      error: storageError
+    } = await supabase
+      .storage
+      .from(CV_BUCKET)
+      .upload(
+        nuevaRuta,
+        archivo,
+        {
+          cacheControl: "3600",
+          contentType: "application/pdf",
+          upsert: false
+        }
+      );
 
     if (storageError) {
-      throw storageError;
+      throw new Error(
+        `Storage de Supabase: ${storageError.message}`
+      );
     }
+
+    archivoNuevoSubido = true;
 
     const datosCv = {
       id: 1,
-
       nombre_archivo:
         archivo.name,
-
       ruta:
-        CV_PATH,
-
+        nuevaRuta,
       actualizado_en:
-        new Date()
-          .toISOString(),
-
+        new Date().toISOString(),
       activo:
         true
     };
 
     const {
       data,
-      error
-    } =
-      await supabase
-        .from(
-          CV_TABLE
-        )
-        .upsert(
-          datosCv,
-          {
-            onConflict:
-              "id"
-          }
-        )
-        .select()
-        .single();
+      error: databaseError
+    } = await supabase
+      .from(CV_TABLE)
+      .upsert(
+        datosCv,
+        {
+          onConflict: "id"
+        }
+      )
+      .select()
+      .single();
 
-    if (error) {
-      throw error;
+    if (databaseError) {
+      throw new Error(
+        `Tabla ${CV_TABLE}: ${databaseError.message}`
+      );
     }
 
     curriculumActual =
       data;
+
+    if (
+      rutaAnterior &&
+      rutaAnterior !== nuevaRuta
+    ) {
+      const {
+        error: removeOldError
+      } = await supabase
+        .storage
+        .from(CV_BUCKET)
+        .remove([
+          rutaAnterior
+        ]);
+
+      if (removeOldError) {
+        console.warn(
+          "El CV nuevo se publicó, pero no fue posible eliminar el archivo anterior:",
+          removeOldError
+        );
+      }
+    }
 
     archivoCvSeleccionado =
       null;
@@ -834,11 +871,30 @@ async function subirCurriculum() {
 
   } catch (error) {
     console.error(
+      "Error al subir el CV:",
       error
     );
 
+    if (archivoNuevoSubido) {
+      const {
+        error: cleanupError
+      } = await supabase
+        .storage
+        .from(CV_BUCKET)
+        .remove([
+          nuevaRuta
+        ]);
+
+      if (cleanupError) {
+        console.warn(
+          "No fue posible limpiar el archivo después del error:",
+          cleanupError
+        );
+      }
+    }
+
     mostrarMensaje(
-      "No fue posible subir el CV.",
+      `No fue posible subir el CV: ${obtenerMensajeError(error)}`,
       "error"
     );
 
@@ -891,9 +947,7 @@ function verCurriculum() {
 }
 
 async function eliminarCurriculum() {
-  if (
-    !curriculumActual
-  ) {
+  if (!curriculumActual) {
     return;
   }
 
@@ -907,32 +961,39 @@ async function eliminarCurriculum() {
   }
 
   try {
-    await supabase
-      .storage
-      .from(
-        CV_BUCKET
-      )
-      .remove([
-        curriculumActual
-          .ruta ||
-        CV_PATH
-      ]);
+    const ruta =
+      curriculumActual.ruta ||
+      CV_PATH;
 
     const {
-      error
-    } =
-      await supabase
-        .from(
-          CV_TABLE
-        )
-        .delete()
-        .eq(
-          "id",
-          1
-        );
+      error: storageError
+    } = await supabase
+      .storage
+      .from(CV_BUCKET)
+      .remove([
+        ruta
+      ]);
 
-    if (error) {
-      throw error;
+    if (storageError) {
+      throw new Error(
+        `Storage de Supabase: ${storageError.message}`
+      );
+    }
+
+    const {
+      error: databaseError
+    } = await supabase
+      .from(CV_TABLE)
+      .delete()
+      .eq(
+        "id",
+        1
+      );
+
+    if (databaseError) {
+      throw new Error(
+        `Tabla ${CV_TABLE}: ${databaseError.message}`
+      );
     }
 
     curriculumActual =
@@ -957,13 +1018,39 @@ async function eliminarCurriculum() {
 
   } catch (error) {
     console.error(
+      "Error al eliminar el CV:",
       error
     );
 
     mostrarMensaje(
-      "No fue posible eliminar el CV.",
+      `No fue posible eliminar el CV: ${obtenerMensajeError(error)}`,
       "error"
     );
+  }
+}
+
+function obtenerMensajeError(error) {
+  if (!error) {
+    return "Error desconocido.";
+  }
+
+  if (
+    typeof error === "string"
+  ) {
+    return error;
+  }
+
+  if (
+    typeof error.message === "string" &&
+    error.message.trim()
+  ) {
+    return error.message.trim();
+  }
+
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return "Error desconocido.";
   }
 }
 
