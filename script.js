@@ -15,6 +15,8 @@ const CV_TABLE = "cv_portafolio";
 const CERTIFICATES_BUCKET = "certificados";
 const CERTIFICATES_TABLE = "certificados_portafolio";
 
+const FEATURED_PROJECTS_LIMIT = 3;
+
 const CERTIFICATE_CATEGORIES = new Map([
   ["Data / BI", "fa-solid fa-chart-column"],
   ["Database", "fa-solid fa-database"],
@@ -792,10 +794,6 @@ async function cargarProyectos() {
         "publicado",
         true
       )
-      .eq(
-        "destacado",
-        true
-      )
       .order(
         "orden",
         {
@@ -813,10 +811,22 @@ async function cargarProyectos() {
       throw error;
     }
 
-    renderizarProyectos(
+    const proyectosPublicados =
       Array.isArray(data)
         ? data
-        : []
+        : [];
+
+    renderizarProyectos(
+      proyectosPublicados
+    );
+
+    renderizarProyectosDestacados(
+      proyectosPublicados.filter(
+        (proyecto) =>
+          Boolean(
+            proyecto.destacado
+          )
+      )
     );
 
   } catch (error) {
@@ -830,6 +840,175 @@ async function cargarProyectos() {
       "fa-solid fa-triangle-exclamation"
     );
   }
+}
+
+function renderizarProyectosDestacados(
+  proyectos
+) {
+  const seccion =
+    document.getElementById(
+      "featured-projects-section"
+    );
+
+  const contenedor =
+    document.getElementById(
+      "featured-projects-list"
+    );
+
+  if (
+    !seccion ||
+    !contenedor
+  ) {
+    return;
+  }
+
+  contenedor.replaceChildren();
+
+  const destacados =
+    (
+      Array.isArray(proyectos)
+        ? proyectos
+        : []
+    ).slice(
+      0,
+      FEATURED_PROJECTS_LIMIT
+    );
+
+  seccion.classList.toggle(
+    "hidden",
+    destacados.length === 0
+  );
+
+  if (
+    destacados.length === 0
+  ) {
+    return;
+  }
+
+  const fragmento =
+    document.createDocumentFragment();
+
+  destacados.forEach(
+    (proyecto) => {
+      fragmento.appendChild(
+        crearTarjetaProyectoDestacado(
+          proyecto
+        )
+      );
+    }
+  );
+
+  contenedor.appendChild(
+    fragmento
+  );
+}
+
+function crearTarjetaProyectoDestacado(
+  proyecto
+) {
+  const tarjeta =
+    document.createElement(
+      "a"
+    );
+
+  tarjeta.href =
+    obtenerEnlaceProyecto(
+      proyecto
+    );
+
+  tarjeta.target =
+    "_blank";
+
+  tarjeta.rel =
+    "noopener noreferrer";
+
+  tarjeta.className =
+    `featured-project-item ${obtenerTemaSeguro(
+      proyecto.tema
+    )}`;
+
+  const iconoContenedor =
+    document.createElement(
+      "div"
+    );
+
+  iconoContenedor.className =
+    "featured-project-icon";
+
+  const icono =
+    document.createElement(
+      "i"
+    );
+
+  icono.className =
+    obtenerIconoSeguro(
+      proyecto.icono
+    );
+
+  iconoContenedor.appendChild(
+    icono
+  );
+
+  const contenido =
+    document.createElement(
+      "div"
+    );
+
+  contenido.className =
+    "featured-project-content";
+
+  const etiqueta =
+    document.createElement(
+      "span"
+    );
+
+  etiqueta.className =
+    "featured-project-kicker";
+
+  etiqueta.textContent =
+    "DESTACADO";
+
+  const titulo =
+    document.createElement(
+      "h4"
+    );
+
+  titulo.textContent =
+    proyecto.titulo;
+
+  const tecnologias =
+    document.createElement(
+      "p"
+    );
+
+  tecnologias.textContent =
+    normalizarTecnologias(
+      proyecto.tecnologias
+    )
+      .slice(0, 4)
+      .join(" · ");
+
+  contenido.append(
+    etiqueta,
+    titulo,
+    tecnologias
+  );
+
+  const flecha =
+    document.createElement(
+      "i"
+    );
+
+  flecha.className =
+    "fa-solid fa-arrow-up-right-from-square featured-project-arrow";
+
+  tarjeta.append(
+    iconoContenedor,
+    contenido,
+    flecha
+  );
+
+  return tarjeta;
 }
 
 function renderizarProyectos(

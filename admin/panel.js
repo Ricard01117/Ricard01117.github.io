@@ -3,6 +3,9 @@
 import { createClient } from
   "https://esm.sh/@supabase/supabase-js@2";
 
+import Sortable from
+  "https://esm.sh/sortablejs@1.15.6";
+
 const SUPABASE_URL =
   "https://uevftlxlqxtrjhkqecjp.supabase.co";
 
@@ -126,6 +129,12 @@ let archivoCertificadoSeleccionado =
 
 let elementos = {};
 
+let sortableProyectos =
+  null;
+
+let guardandoOrdenProyectos =
+  false;
+
 document.addEventListener(
   "DOMContentLoaded",
   iniciarPanel
@@ -150,6 +159,8 @@ async function iniciarPanel() {
   if (!usuarioValido) {
     return;
   }
+
+  configurarReordenamientoProyectos();
 
   supabase.auth
     .onAuthStateChange(
@@ -358,6 +369,11 @@ function guardarReferencias() {
     projectsList:
       document.getElementById(
         "projects-list"
+      ),
+
+    reorderHelp:
+      document.getElementById(
+        "reorder-help"
       ),
 
     emptyState:
@@ -2726,6 +2742,326 @@ function renderizarProyectos() {
     .appendChild(
       fragmento
     );
+
+  actualizarEstadoReordenamiento();
+}
+
+function configurarReordenamientoProyectos() {
+
+  if (
+    sortableProyectos ||
+    !elementos.projectsList
+  ) {
+    return;
+  }
+
+  sortableProyectos =
+    Sortable.create(
+      elementos.projectsList,
+      {
+        animation: 180,
+
+        draggable:
+          ".admin-project-card",
+
+        handle:
+          ".drag-handle",
+
+        ghostClass:
+          "project-sort-ghost",
+
+        chosenClass:
+          "project-sort-chosen",
+
+        dragClass:
+          "project-sort-drag",
+
+        delayOnTouchOnly:
+          true,
+
+        delay: 120,
+
+        touchStartThreshold:
+          4,
+
+        filter:
+          ".action-button, a, input, select, textarea",
+
+        preventOnFilter:
+          false,
+
+        onEnd:
+          manejarFinReordenamiento
+      }
+    );
+
+  actualizarEstadoReordenamiento();
+}
+
+function actualizarEstadoReordenamiento() {
+
+  if (
+    !sortableProyectos ||
+    !elementos.reorderHelp
+  ) {
+    return;
+  }
+
+  const hayBusqueda =
+    Boolean(
+      elementos.search
+        .value
+        .trim()
+    );
+
+  const hayFiltro =
+    elementos.statusFilter
+      .value !== "all";
+
+  const deshabilitado =
+    guardandoOrdenProyectos ||
+    hayBusqueda ||
+    hayFiltro;
+
+  sortableProyectos.option(
+    "disabled",
+    deshabilitado
+  );
+
+  elementos.projectsList
+    .classList.toggle(
+      "reorder-disabled",
+      deshabilitado
+    );
+
+  elementos.reorderHelp
+    .classList.toggle(
+      "disabled",
+      deshabilitado
+    );
+
+  const texto =
+    elementos.reorderHelp
+      .querySelector("span");
+
+  if (!texto) {
+    return;
+  }
+
+  if (
+    guardandoOrdenProyectos
+  ) {
+
+    texto.textContent =
+      "Guardando el nuevo orden...";
+
+    return;
+  }
+
+  if (
+    hayBusqueda ||
+    hayFiltro
+  ) {
+
+    texto.textContent =
+      "Quita la búsqueda y selecciona “Todos” para reordenar proyectos.";
+
+    return;
+  }
+
+  texto.textContent =
+    "Arrastra las tarjetas para cambiar su orden. Se guarda automáticamente.";
+}
+
+async function manejarFinReordenamiento(
+  evento
+) {
+
+  if (
+    evento.oldIndex ===
+    evento.newIndex
+  ) {
+    return;
+  }
+
+  await guardarOrdenProyectosDesdeVista();
+}
+
+async function guardarOrdenProyectosDesdeVista() {
+
+  if (
+    guardandoOrdenProyectos
+  ) {
+    return;
+  }
+
+  const ids =
+    Array.from(
+      elementos.projectsList
+        .querySelectorAll(
+          ".admin-project-card"
+        )
+    )
+      .map(
+        (tarjeta) =>
+          tarjeta.dataset
+            .projectId
+      )
+      .filter(Boolean);
+
+  if (
+    ids.length !==
+    proyectos.length
+  ) {
+
+    await cargarProyectos();
+
+    mostrarMensaje(
+      "No fue posible guardar el orden con un filtro activo.",
+      "warning"
+    );
+
+    return;
+  }
+
+  const ordenados =
+    ids
+      .map(
+        (id) =>
+          proyectos.find(
+            (proyecto) =>
+              String(
+                proyecto.id
+              ) === id
+          )
+      )
+      .filter(Boolean);
+
+  if (
+    ordenados.length !==
+    proyectos.length
+  ) {
+
+    await cargarProyectos();
+
+    return;
+  }
+
+  const cambios =
+    ordenados.map(
+      (proyecto, indice) => ({
+        id: proyecto.id,
+        orden: indice + 1
+      })
+    );
+
+  guardandoOrdenProyectos =
+    true;
+
+  actualizarEstadoReordenamiento();
+
+  try {
+
+    const ordenTemporalBase =
+      Math.max(
+        1000,
+        ...proyectos.map(
+          (proyecto) =>
+            Number(
+              proyecto.orden
+            ) || 0
+        )
+      ) +
+      proyectos.length +
+      100;
+
+    for (
+      let indice = 0;
+      indice < cambios.length;
+      indice += 1
+    ) {
+
+      const cambio =
+        cambios[indice];
+
+      const { error } =
+        await supabase
+          .from(
+            "proyectos"
+          )
+          .update({
+            orden:
+              ordenTemporalBase +
+              indice
+          })
+          .eq(
+            "id",
+            cambio.id
+          );
+
+      if (error) {
+        throw error;
+      }
+    }
+
+    for (
+      const cambio of cambios
+    ) {
+
+      const { error } =
+        await supabase
+          .from(
+            "proyectos"
+          )
+          .update({
+            orden:
+              cambio.orden
+          })
+          .eq(
+            "id",
+            cambio.id
+          );
+
+      if (error) {
+        throw error;
+      }
+    }
+
+    proyectos =
+      ordenados.map(
+        (proyecto, indice) => ({
+          ...proyecto,
+          orden: indice + 1
+        })
+      );
+
+    renderizarProyectos();
+
+    mostrarMensaje(
+      "Orden de proyectos actualizado.",
+      "success"
+    );
+
+  } catch (error) {
+
+    console.error(
+      error
+    );
+
+    await cargarProyectos();
+
+    mostrarMensaje(
+      "No fue posible guardar el nuevo orden.",
+      "error"
+    );
+
+  } finally {
+
+    guardandoOrdenProyectos =
+      false;
+
+    actualizarEstadoReordenamiento();
+  }
 }
 
 function crearTarjetaProyecto(
@@ -2741,6 +3077,42 @@ function crearTarjetaProyecto(
     `admin-project-card ${obtenerTemaSeguro(
       proyecto.tema
     )}`;
+
+  tarjeta.dataset.projectId =
+    String(
+      proyecto.id
+    );
+
+  const arrastre =
+    document.createElement(
+      "button"
+    );
+
+  arrastre.type =
+    "button";
+
+  arrastre.className =
+    "drag-handle";
+
+  arrastre.setAttribute(
+    "aria-label",
+    `Mover ${proyecto.titulo}`
+  );
+
+  arrastre.title =
+    "Arrastrar para cambiar el orden";
+
+  const iconoArrastre =
+    document.createElement(
+      "i"
+    );
+
+  iconoArrastre.className =
+    "fa-solid fa-grip-vertical";
+
+  arrastre.appendChild(
+    iconoArrastre
+  );
 
   const cabecera =
     document.createElement(
@@ -2952,6 +3324,27 @@ function crearTarjetaProyecto(
     }
   );
 
+  const destacado =
+    crearBoton(
+      proyecto.destacado
+        ? "Quitar destacado"
+        : "Destacar"
+    );
+
+  destacado.classList.add(
+    "featured-action"
+  );
+
+  destacado.addEventListener(
+    "click",
+    async () => {
+
+      await cambiarDestacado(
+        proyecto
+      );
+    }
+  );
+
   const eliminar =
     crearBoton(
       "Eliminar",
@@ -2973,10 +3366,12 @@ function crearTarjetaProyecto(
     github,
     editar,
     estado,
+    destacado,
     eliminar
   );
 
   tarjeta.append(
+    arrastre,
     cabecera,
     tags,
     meta,
@@ -3049,7 +3444,7 @@ function abrirNuevoProyecto() {
     .checked = true;
 
   elementos.featured
-    .checked = true;
+    .checked = false;
 
   elementos.order
     .value =
@@ -3349,6 +3744,54 @@ async function cambiarPublicacion(
   }
 }
 
+async function cambiarDestacado(
+  proyecto
+) {
+
+  try {
+
+    const {
+      error
+    } =
+      await supabase
+        .from(
+          "proyectos"
+        )
+        .update({
+          destacado:
+            !proyecto.destacado
+        })
+        .eq(
+          "id",
+          proyecto.id
+        );
+
+    if (error) {
+      throw error;
+    }
+
+    await cargarProyectos();
+
+    mostrarMensaje(
+      proyecto.destacado
+        ? "Proyecto retirado de destacados."
+        : "Proyecto agregado a destacados.",
+      "success"
+    );
+
+  } catch (error) {
+
+    console.error(
+      error
+    );
+
+    mostrarMensaje(
+      "No fue posible cambiar el destacado.",
+      "error"
+    );
+  }
+}
+
 async function eliminarProyecto(
   proyecto
 ) {
@@ -3615,7 +4058,7 @@ function obtenerSiguienteOrden() {
   if (
     proyectos.length === 0
   ) {
-    return 0;
+    return 1;
   }
 
   return (
