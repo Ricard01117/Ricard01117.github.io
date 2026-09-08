@@ -25,7 +25,7 @@
   <script type="module" src="script.js?v=17"></script>
 
   <style>
-    /* Estilos exclusivos del botón Juegos */
+    /* Botón Juegos: fondo oscuro y resplandor intenso */
     .social-button.games-button {
       box-sizing: border-box;
       display: flex;
@@ -40,81 +40,90 @@
 
       color: #ffffff;
       font-size: 18px;
-      font-weight: 700;
+      font-weight: 800;
       text-decoration: none;
 
-      border: 2px solid #b477ff;
+      border: 2px solid #dfb5ff;
       border-radius: 9px;
 
       background: linear-gradient(
         120deg,
-        #160d29,
-        #28113d
+        #160a25,
+        #29103e
       );
 
-      text-shadow: 0 0 8px #c084fc99;
+      text-shadow: 0 1px 3px #000000;
 
       box-shadow:
-        0 0 14px #a855f799,
-        0 0 28px #a855f755,
-        inset 0 0 12px #a855f733;
+        0 0 8px #e0aaff,
+        0 0 20px #b84dff,
+        0 0 38px #a020f099,
+        inset 0 0 10px #bd63ff33;
 
-      animation: games-glow 2s ease-in-out infinite alternate;
+      animation: games-glow 1.8s ease-in-out infinite alternate;
 
       transition:
         transform 0.22s ease,
-        background 0.22s ease,
-        box-shadow 0.22s ease,
-        border-color 0.22s ease;
+        border-color 0.22s ease,
+        background 0.22s ease;
     }
 
-    /* El brillo aumenta y disminuye sin apagarse */
+    .social-button.games-button i {
+      color: #ffffff;
+      font-size: 21px;
+      text-shadow: 0 1px 3px #000000;
+    }
+
+    /* Brillo permanente: nunca se apaga */
     @keyframes games-glow {
       from {
         box-shadow:
-          0 0 14px #a855f799,
-          0 0 28px #a855f755,
-          inset 0 0 12px #a855f733;
+          0 0 8px #e0aaff,
+          0 0 20px #b84dff,
+          0 0 38px #a020f099,
+          inset 0 0 10px #bd63ff33;
       }
 
       to {
         box-shadow:
-          0 0 22px #a855f7cc,
-          0 0 42px #a855f777,
-          inset 0 0 18px #a855f755;
+          0 0 12px #edcaff,
+          0 0 28px #c266ff,
+          0 0 50px #aa33ffbb,
+          inset 0 0 14px #bd63ff44;
       }
     }
 
-    /* Efecto intenso al pasar el cursor */
+    /* Mayor brillo al pasar el cursor */
     .social-button.games-button:hover,
     .social-button.games-button:focus-visible {
       animation: none;
 
-      transform: translateY(-4px) scale(1.02);
+      transform: translateY(-3px) scale(1.02);
 
       color: #ffffff;
-      border-color: #e9d5ff;
+      border-color: #f3ddff;
 
       background: linear-gradient(
         120deg,
-        #522080,
-        #7e22ce
+        #25103b,
+        #3b1756
       );
 
       box-shadow:
-        0 0 24px #c084fc,
-        0 0 48px #a855f7bb,
-        inset 0 0 20px #d8b4fe55;
+        0 0 12px #f0d0ff,
+        0 0 32px #cc80ff,
+        0 0 58px #b044ffcc,
+        inset 0 0 14px #bd63ff44;
 
-      text-shadow: 0 0 12px #ffffff99;
+      text-shadow: 0 1px 3px #000000;
     }
 
     .social-button.games-button:focus-visible {
-      outline: 2px solid #e9d5ff;
+      outline: 2px solid #ffffff;
       outline-offset: 5px;
     }
 
-    /* Mantiene el brillo sin movimiento cuando se solicita */
+    /* Mantiene el brillo sin animación si se solicita */
     @media (prefers-reduced-motion: reduce) {
       .social-button.games-button {
         animation: none;
@@ -135,7 +144,9 @@
     <header class="topbar">
       <div class="terminal-title">
         <span class="terminal-icon">&gt;_</span>
+
         <strong>Ricard01117</strong>
+
         <span>/ README.md</span>
       </div>
 
