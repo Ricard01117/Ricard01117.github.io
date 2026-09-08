@@ -15,7 +15,7 @@
 
   <title>Ricardo Castro | Portafolio</title>
 
-  <link rel="stylesheet" href="estilos.css?v=17">
+  <link rel="stylesheet" href="estilos.css?v=18">
 
   <link
     rel="stylesheet"
@@ -23,19 +23,119 @@
   >
 
   <script type="module" src="script.js?v=17"></script>
+
+  <style>
+    /* Estilos exclusivos del botón Juegos */
+    .social-button.games-button {
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 11px;
+
+      width: 100%;
+      min-height: 52px;
+      margin-top: 18px;
+      padding: 12px;
+
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 700;
+      text-decoration: none;
+
+      border: 2px solid #b477ff;
+      border-radius: 9px;
+
+      background: linear-gradient(
+        120deg,
+        #160d29,
+        #28113d
+      );
+
+      text-shadow: 0 0 8px #c084fc99;
+
+      box-shadow:
+        0 0 14px #a855f799,
+        0 0 28px #a855f755,
+        inset 0 0 12px #a855f733;
+
+      animation: games-glow 2s ease-in-out infinite alternate;
+
+      transition:
+        transform 0.22s ease,
+        background 0.22s ease,
+        box-shadow 0.22s ease,
+        border-color 0.22s ease;
+    }
+
+    /* El brillo aumenta y disminuye sin apagarse */
+    @keyframes games-glow {
+      from {
+        box-shadow:
+          0 0 14px #a855f799,
+          0 0 28px #a855f755,
+          inset 0 0 12px #a855f733;
+      }
+
+      to {
+        box-shadow:
+          0 0 22px #a855f7cc,
+          0 0 42px #a855f777,
+          inset 0 0 18px #a855f755;
+      }
+    }
+
+    /* Efecto intenso al pasar el cursor */
+    .social-button.games-button:hover,
+    .social-button.games-button:focus-visible {
+      animation: none;
+
+      transform: translateY(-4px) scale(1.02);
+
+      color: #ffffff;
+      border-color: #e9d5ff;
+
+      background: linear-gradient(
+        120deg,
+        #522080,
+        #7e22ce
+      );
+
+      box-shadow:
+        0 0 24px #c084fc,
+        0 0 48px #a855f7bb,
+        inset 0 0 20px #d8b4fe55;
+
+      text-shadow: 0 0 12px #ffffff99;
+    }
+
+    .social-button.games-button:focus-visible {
+      outline: 2px solid #e9d5ff;
+      outline-offset: 5px;
+    }
+
+    /* Mantiene el brillo sin movimiento cuando se solicita */
+    @media (prefers-reduced-motion: reduce) {
+      .social-button.games-button {
+        animation: none;
+        transition: none;
+      }
+
+      .social-button.games-button:hover,
+      .social-button.games-button:focus-visible {
+        transform: none;
+      }
+    }
+  </style>
 </head>
 
 <body>
-
   <main class="portfolio">
 
     <header class="topbar">
-
       <div class="terminal-title">
         <span class="terminal-icon">&gt;_</span>
-
         <strong>Ricard01117</strong>
-
         <span>/ README.md</span>
       </div>
 
@@ -48,7 +148,6 @@
       >
         <i class="fa-solid fa-palette"></i>
       </button>
-
     </header>
 
     <section class="dashboard">
@@ -56,7 +155,6 @@
       <aside class="profile-panel">
 
         <div class="profile-image-container">
-
           <div class="orbit orbit-one"></div>
           <div class="orbit orbit-two"></div>
 
@@ -65,7 +163,6 @@
             alt="Fotografía de perfil de Ricardo Castro"
             class="profile-photo"
           >
-
         </div>
 
         <h1>Ricardo Castro</h1>
@@ -88,7 +185,6 @@
         </p>
 
         <div class="social-buttons">
-
           <a
             href="https://github.com/Ricard01117"
             target="_blank"
@@ -108,11 +204,17 @@
             <i class="fa-brands fa-linkedin"></i>
             LinkedIn
           </a>
-
         </div>
 
-        <div class="contact-info">
+        <a
+          href="https://ricard01117.github.io/JuegosRCC/"
+          class="social-button games-button"
+        >
+          <i class="fa-solid fa-gamepad" aria-hidden="true"></i>
+          Juegos
+        </a>
 
+        <div class="contact-info">
           <p>
             <i class="fa-solid fa-location-dot"></i>
             México
@@ -132,17 +234,14 @@
             <i class="fa-regular fa-envelope"></i>
             rcastrocastro0603@gmail.com
           </p>
-
         </div>
 
         <section id="cv-section" class="cv-card">
-
           <div class="cv-icon">
             <i class="fa-solid fa-file-pdf"></i>
           </div>
 
           <div class="cv-content">
-
             <div class="cv-info">
               <span class="cv-label">CURRÍCULUM</span>
 
@@ -165,9 +264,7 @@
                 CV no disponible
               </span>
             </a>
-
           </div>
-
         </section>
 
         <section
@@ -175,9 +272,7 @@
           class="certifications-card hidden"
           aria-labelledby="certifications-title"
         >
-
           <div class="certifications-header">
-
             <div class="certifications-header-icon">
               <i class="fa-solid fa-cloud"></i>
             </div>
@@ -191,7 +286,6 @@
                 Certificaciones
               </h3>
             </div>
-
           </div>
 
           <div
@@ -199,7 +293,6 @@
             class="certifications-list"
             aria-live="polite"
           ></div>
-
         </section>
 
         <section
@@ -207,9 +300,7 @@
           class="featured-projects-card hidden"
           aria-labelledby="featured-projects-title"
         >
-
           <div class="featured-projects-header">
-
             <div class="featured-projects-header-icon">
               <i class="fa-solid fa-star"></i>
             </div>
@@ -223,7 +314,6 @@
                 Proyectos destacados
               </h3>
             </div>
-
           </div>
 
           <div
@@ -231,7 +321,6 @@
             class="featured-projects-list"
             aria-live="polite"
           ></div>
-
         </section>
 
       </aside>
@@ -239,13 +328,10 @@
       <div class="main-content">
 
         <section class="hero">
-
           <div class="hero-text">
-
             <h2>
               Construyendo soluciones reales
               <br>
-
               con código que
               <span>transforma.</span>
             </h2>
@@ -256,24 +342,20 @@
   focus: ['React', 'JavaScript', 'Python', 'SQL', 'Laravel'],
   goal: 'Resolver problemas, crear valor y optimizar procesos.'
 };</code></pre>
-
           </div>
 
           <div class="code-decoration">
             <i class="fa-solid fa-code"></i>
           </div>
-
         </section>
 
         <section class="panel technologies-section">
-
           <h3>
             <i class="fa-solid fa-cube"></i>
             Tecnologías
           </h3>
 
           <div class="technology-grid">
-
             <article class="technology-card react-card">
               <i class="fa-brands fa-react"></i>
               <span>React</span>
@@ -298,13 +380,10 @@
               <i class="fa-brands fa-laravel"></i>
               <span>Laravel</span>
             </article>
-
           </div>
-
         </section>
 
         <section class="panel projects-section">
-
           <h3>
             <i class="fa-solid fa-rocket"></i>
             Proyectos
@@ -315,14 +394,10 @@
             class="projects-grid"
             aria-live="polite"
           ></div>
-
         </section>
 
       </div>
-
     </section>
-
   </main>
-
 </body>
 </html>
