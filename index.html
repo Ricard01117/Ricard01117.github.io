@@ -15,7 +15,7 @@
 
   <title>Ricardo Castro | Portafolio</title>
 
-  <link rel="stylesheet" href="estilos.css?v=18">
+  <link rel="stylesheet" href="estilos.css?v=19">
 
   <link
     rel="stylesheet"
@@ -25,43 +25,30 @@
   <script type="module" src="script.js?v=17"></script>
 
   <style>
-    /* Botón Juegos: fondo oscuro y resplandor intenso */
     .social-button.games-button {
       box-sizing: border-box;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 11px;
-
       width: 100%;
       min-height: 52px;
       margin-top: 18px;
       padding: 12px;
-
       color: #ffffff;
       font-size: 18px;
       font-weight: 800;
       text-decoration: none;
-
       border: 2px solid #dfb5ff;
       border-radius: 9px;
-
-      background: linear-gradient(
-        120deg,
-        #160a25,
-        #29103e
-      );
-
+      background: linear-gradient(120deg, #160a25, #29103e);
       text-shadow: 0 1px 3px #000000;
-
       box-shadow:
         0 0 8px #e0aaff,
         0 0 20px #b84dff,
         0 0 38px #a020f099,
         inset 0 0 10px #bd63ff33;
-
       animation: games-glow 1.8s ease-in-out infinite alternate;
-
       transition:
         transform 0.22s ease,
         border-color 0.22s ease,
@@ -74,7 +61,6 @@
       text-shadow: 0 1px 3px #000000;
     }
 
-    /* Brillo permanente: nunca se apaga */
     @keyframes games-glow {
       from {
         box-shadow:
@@ -93,28 +79,18 @@
       }
     }
 
-    /* Mayor brillo al pasar el cursor */
     .social-button.games-button:hover,
     .social-button.games-button:focus-visible {
       animation: none;
-
       transform: translateY(-3px) scale(1.02);
-
       color: #ffffff;
       border-color: #f3ddff;
-
-      background: linear-gradient(
-        120deg,
-        #25103b,
-        #3b1756
-      );
-
+      background: linear-gradient(120deg, #25103b, #3b1756);
       box-shadow:
         0 0 12px #f0d0ff,
         0 0 32px #cc80ff,
         0 0 58px #b044ffcc,
         inset 0 0 14px #bd63ff44;
-
       text-shadow: 0 1px 3px #000000;
     }
 
@@ -123,7 +99,6 @@
       outline-offset: 5px;
     }
 
-    /* Mantiene el brillo sin animación si se solicita */
     @media (prefers-reduced-motion: reduce) {
       .social-button.games-button {
         animation: none;
@@ -144,9 +119,7 @@
     <header class="topbar">
       <div class="terminal-title">
         <span class="terminal-icon">&gt;_</span>
-
         <strong>Ricard01117</strong>
-
         <span>/ README.md</span>
       </div>
 
@@ -196,6 +169,7 @@
         </p>
 
         <div class="social-buttons">
+
           <a
             href="https://github.com/Ricard01117"
             target="_blank"
@@ -215,6 +189,7 @@
             <i class="fa-brands fa-linkedin"></i>
             LinkedIn
           </a>
+
         </div>
 
         <a
@@ -226,6 +201,7 @@
         </a>
 
         <div class="contact-info">
+
           <p>
             <i class="fa-solid fa-location-dot"></i>
             México
@@ -233,11 +209,7 @@
 
           <p>
             <i class="fa-regular fa-clock"></i>
-
-            <span id="current-time">
-              --:--:--
-            </span>
-
+            <span id="current-time">--:--:--</span>
             <span>(UTC -06:00)</span>
           </p>
 
@@ -245,17 +217,19 @@
             <i class="fa-regular fa-envelope"></i>
             rcastrocastro0603@gmail.com
           </p>
+
         </div>
 
         <section id="cv-section" class="cv-card">
+
           <div class="cv-icon">
             <i class="fa-solid fa-file-pdf"></i>
           </div>
 
           <div class="cv-content">
+
             <div class="cv-info">
               <span class="cv-label">CURRÍCULUM</span>
-
               <h3>Ricardo Castro</h3>
 
               <p id="cv-description">
@@ -270,11 +244,11 @@
               aria-disabled="true"
             >
               <i class="fa-solid fa-download"></i>
-
               <span id="cv-download-text">
                 CV no disponible
               </span>
             </a>
+
           </div>
         </section>
 
@@ -283,7 +257,9 @@
           class="certifications-card hidden"
           aria-labelledby="certifications-title"
         >
+
           <div class="certifications-header">
+
             <div class="certifications-header-icon">
               <i class="fa-solid fa-cloud"></i>
             </div>
@@ -297,6 +273,7 @@
                 Certificaciones
               </h3>
             </div>
+
           </div>
 
           <div
@@ -304,6 +281,7 @@
             class="certifications-list"
             aria-live="polite"
           ></div>
+
         </section>
 
         <section
@@ -311,7 +289,9 @@
           class="featured-projects-card hidden"
           aria-labelledby="featured-projects-title"
         >
+
           <div class="featured-projects-header">
+
             <div class="featured-projects-header-icon">
               <i class="fa-solid fa-star"></i>
             </div>
@@ -325,6 +305,7 @@
                 Proyectos destacados
               </h3>
             </div>
+
           </div>
 
           <div
@@ -332,6 +313,7 @@
             class="featured-projects-list"
             aria-live="polite"
           ></div>
+
         </section>
 
       </aside>
@@ -339,7 +321,9 @@
       <div class="main-content">
 
         <section class="hero">
+
           <div class="hero-text">
+
             <h2>
               Construyendo soluciones reales
               <br>
@@ -353,14 +337,19 @@
   focus: ['React', 'JavaScript', 'Python', 'SQL', 'Laravel'],
   goal: 'Resolver problemas, crear valor y optimizar procesos.'
 };</code></pre>
+
           </div>
 
           <div class="code-decoration">
             <i class="fa-solid fa-code"></i>
           </div>
+
         </section>
 
+        <!-- LAS NUEVE TECNOLOGÍAS -->
+
         <section class="panel technologies-section">
+
           <h3>
             <i class="fa-solid fa-cube"></i>
             Tecnologías
@@ -368,176 +357,92 @@
 
           <div class="technology-grid">
 
-            <!-- 1. REACT -->
+            <!-- FILA 1 -->
+
             <article class="technology-card react-card">
-              <i class="fa-brands fa-react"></i>
+              <i class="fa-brands fa-react" aria-hidden="true"></i>
               <span>React</span>
             </article>
 
-            <!-- 2. JAVASCRIPT -->
             <article class="technology-card javascript-card">
-              <i class="fa-brands fa-js"></i>
+              <i class="fa-brands fa-js" aria-hidden="true"></i>
               <span>JavaScript</span>
             </article>
 
-            <!-- 3. PYTHON -->
             <article class="technology-card python-card">
-              <i class="fa-brands fa-python"></i>
+              <i class="fa-brands fa-python" aria-hidden="true"></i>
               <span>Python</span>
             </article>
 
-            <!-- 4. SQL -->
+            <!-- FILA 2 -->
+
             <article class="technology-card sql-card">
-              <i class="fa-solid fa-database"></i>
+              <i class="fa-solid fa-database" aria-hidden="true"></i>
               <span>SQL</span>
             </article>
 
-            <!-- 5. LARAVEL -->
             <article class="technology-card laravel-card">
-              <i class="fa-brands fa-laravel"></i>
+              <i class="fa-brands fa-laravel" aria-hidden="true"></i>
               <span>Laravel</span>
             </article>
 
-            <!-- 6. TYPESCRIPT -->
             <article class="technology-card typescript-card">
-
-              <svg
-                class="technology-logo typescript-logo"
-                viewBox="0 0 40 40"
-                xmlns="http://www.w3.org/2000/svg"
+              <span
+                class="technology-mark ts-mark"
                 aria-hidden="true"
-              >
-                <rect
-                  x="1"
-                  y="1"
-                  width="38"
-                  height="38"
-                  rx="3"
-                  fill="#3178c6"
-                />
-
-                <path
-                  fill="#ffffff"
-                  d="M7 20h19v4h-7v12h-5V24H7z"
-                  transform="translate(0,-3)"
-                />
-
-                <path
-                  fill="#ffffff"
-                  d="M33 22.5c-1.2-1-2.4-1.3-3.7-1.3-1.1 0-1.6.4-1.6 1 0 .7.6 1 2.4 1.5 2.8.8 4.6 2 4.6 4.8 0 3.5-2.9 5.4-6.6 5.4-2.6 0-4.8-.8-6.5-2.5l2.4-3c1.4 1.1 2.8 1.8 4.2 1.8 1.2 0 1.9-.4 1.9-1.2 0-.7-.6-1-2.3-1.5-2.7-.8-4.7-2-4.7-4.9 0-3.2 2.6-5.2 6.4-5.2 2.3 0 4.1.5 5.6 1.7z"
-                  transform="translate(-1,-1)"
-                />
-              </svg>
+              >TS</span>
 
               <span>TypeScript</span>
             </article>
 
-            <!-- 7. GOOGLE SHEETS + AUTOMATIZACIONES -->
+            <!-- FILA 3 -->
+
             <article class="technology-card automation-card">
 
-              <div class="automation-logo" aria-hidden="true">
+              <span
+                class="technology-mark sheets-mark"
+                aria-hidden="true"
+              >
+                <i class="fa-solid fa-file-excel"></i>
+                <i class="fa-solid fa-gear sheets-gear"></i>
+              </span>
 
-                <svg
-                  class="technology-logo sheets-logo"
-                  viewBox="0 0 40 40"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fill="#188038"
-                    d="M8 2h16l9 9v25a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"
-                  />
-
-                  <path
-                    fill="#34a853"
-                    d="M24 2v9h9z"
-                  />
-
-                  <path
-                    fill="#ffffff"
-                    d="M11 16h17v15H11z"
-                  />
-
-                  <path
-                    fill="#188038"
-                    d="M13 18h13v11H13zm2 2v2h4v-2zm6 0v2h3v-2zm-6 4v3h4v-3zm6 0v3h3v-3z"
-                  />
-                </svg>
-
-                <i class="fa-solid fa-gears automation-gear"></i>
-
-              </div>
-
-              <span>
+              <span class="technology-name">
                 Automatizaciones
                 <small>Google Sheets</small>
               </span>
 
             </article>
 
-            <!-- 8. NODE.JS -->
             <article class="technology-card node-card">
-
-              <i class="fa-brands fa-node-js"></i>
-
+              <i class="fa-brands fa-node-js" aria-hidden="true"></i>
               <span>Node.js</span>
-
             </article>
 
-            <!-- 9. POWER BI -->
             <article class="technology-card powerbi-card">
 
-              <svg
-                class="technology-logo powerbi-logo"
-                viewBox="0 0 48 48"
-                xmlns="http://www.w3.org/2000/svg"
-                role="img"
-                aria-label="Power BI"
+              <span
+                class="technology-mark powerbi-mark"
+                aria-hidden="true"
               >
-                <rect
-                  x="4"
-                  y="19"
-                  width="8"
-                  height="24"
-                  rx="3"
-                  fill="#F2C811"
-                />
-
-                <rect
-                  x="14"
-                  y="12"
-                  width="8"
-                  height="31"
-                  rx="3"
-                  fill="#F2C811"
-                />
-
-                <rect
-                  x="24"
-                  y="5"
-                  width="8"
-                  height="38"
-                  rx="3"
-                  fill="#F2C811"
-                />
-
-                <rect
-                  x="34"
-                  y="1"
-                  width="8"
-                  height="42"
-                  rx="3"
-                  fill="#E6B800"
-                />
-              </svg>
+                <b></b>
+                <b></b>
+                <b></b>
+                <b></b>
+              </span>
 
               <span>Power BI</span>
 
             </article>
 
           </div>
+
         </section>
 
+        <!-- PROYECTOS -->
+
         <section class="panel projects-section">
+
           <h3>
             <i class="fa-solid fa-rocket"></i>
             Proyectos
@@ -548,10 +453,14 @@
             class="projects-grid"
             aria-live="polite"
           ></div>
+
         </section>
 
       </div>
+
     </section>
+
   </main>
+
 </body>
 </html>
